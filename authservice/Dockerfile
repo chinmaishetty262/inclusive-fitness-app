@@ -7,7 +7,7 @@ COPY src ./src
 
 RUN gradle bootJar --no-daemon
 
-FROM openjdk:8-jre-slim
+FROM eclipse-temurin:8-jre-ubi9-minimal
 
 EXPOSE 8080
 
