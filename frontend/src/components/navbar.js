@@ -11,8 +11,11 @@ const NavbarComponent = ({ onLogout }) => {
       case 'TrackExercise':
         navigate('/trackExercise');
         break;
-      case 'Statistics':
+      case 'ActivitiesSummary':
         navigate('/statistics');
+        break;
+      case 'MyFeed':
+        navigate('/myfeed');
         break;
       case 'Journal':
         navigate('/journal');
@@ -29,7 +32,8 @@ const NavbarComponent = ({ onLogout }) => {
         <Nav className="mr-auto">
         <Nav>
           <Nav.Link className="custom-nav-link" onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
-          <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Statistics')}>Statistics</Nav.Link>
+          <Nav.Link className="custom-nav-link" onClick={() => onNavigate('ActivitiesSummary')}>Activities Summary</Nav.Link>
+          <Nav.Link className="custom-nav-link" onClick={() => onNavigate('MyFeed')}>My Feed</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Journal')}>Weekly Journal</Nav.Link>
           <Nav.Link className="custom-nav-link" onClick={onLogout}>Logout</Nav.Link>
         </Nav>

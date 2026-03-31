@@ -2,38 +2,77 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './statistics.css';
 
-const Statistics = ({ currentUser }) => {
-  const [data, setData] = useState([]);
+const ActivitiesSummary = ({ currentUser }) => {
+  const [aggregatedStats, setAggregatedStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const url = `http://localhost:5050/stats/${currentUser}`;
+    const statsUrl = `http://localhost:5050/stats/${currentUser}`;
+    setLoading(true);
+    setError('');
 
-    axios.get(url)
-      .then(response => {
-        setData(response.data.stats);
+    axios.get(statsUrl)
+      .then((statsRes) => {
+        setAggregatedStats(statsRes.data.stats || []);
       })
-      .catch(error => {
-        console.error('There was an error fetching the data!', error);
-      });
+      .catch((err) => {
+        console.error('There was an error fetching the data!', err);
+        setError('Unable to load statistics right now.');
+      })
+      .finally(() => setLoading(false));
   }, [currentUser]);
 
-  const currentUserData = data.find(item => item.username === currentUser);
+  const currentUserData = aggregatedStats.find(item => item.username === currentUser);
+  const summaryExercises = currentUserData?.exercises ?? [];
+  const totalActiveMinutes = summaryExercises.reduce((sum, item) => sum + (item.totalDuration || 0), 0);
+  const totalDistance = summaryExercises.reduce((sum, item) => sum + (item.totalDistance || 0), 0);
+  const totalSteps = summaryExercises.reduce((sum, item) => sum + (item.totalSteps || 0), 0);
 
   return (
     <div className="stats-container">
-      <h4>Well done, {currentUser}! This is your overall effort:</h4>
-      {currentUserData ? (
-        currentUserData.exercises.map((item, index) => (
-          <div key={index} className="exercise-data">
-            <div><strong>{item.exerciseType}</strong></div>
-            <div>Total Duration: {item.totalDuration} min</div>
-          </div>
-        ))
+      {error && <div className="stats-error">{error}</div>}
+      {loading ? (
+        <div className="stats-loading">Loading statistics...</div>
       ) : (
-        <p>No data available</p>
+        <>
+          <div className="section-summary section-panel">
+            <h4>Activities Summary</h4>
+            <div className="summary-bubbles">
+              <div className="summary-bubble bubble-active">
+                <div className="bubble-label">Active Minutes</div>
+                <div className="bubble-value">{totalActiveMinutes}</div>
+              </div>
+              <div className="summary-bubble bubble-distance">
+                <div className="bubble-label">Distance</div>
+                <div className="bubble-value">{totalDistance} km</div>
+              </div>
+              <div className="summary-bubble bubble-steps">
+                <div className="bubble-label">Steps</div>
+                <div className="bubble-value">{totalSteps}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="section-types section-panel">
+            <h4>Activity Totals</h4>
+            {currentUserData && currentUserData.exercises.length > 0 ? (
+              currentUserData.exercises.map((item, index) => (
+                <div key={index} className="exercise-data exercise-type-item">
+                  <div><strong>{item.exerciseType}</strong></div>
+                  <div>Duration: {item.totalDuration ?? 0} min</div>
+                  <div>Distance: {item.totalDistance ?? 0} km</div>
+                  <div>Steps: {item.totalSteps ?? 0}</div>
+                </div>
+              ))
+            ) : (
+              <p>No activity type totals available.</p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
-export default Statistics;
+export default ActivitiesSummary;
