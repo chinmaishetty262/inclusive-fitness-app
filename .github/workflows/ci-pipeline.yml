@@ -2,7 +2,7 @@ name: CI Pipeline - Monorepo
 
 on:
   pull_request:
-    branches: [main]
+    branches: [preprod]
     paths:
       - 'frontend/**'
       - 'activity-tracking/**'
