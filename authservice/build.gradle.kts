@@ -21,6 +21,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("io.cucumber:cucumber-java:7.34.2") 
+	testImplementation("io.cucumber:cucumber-junit:7.34.2")
 }
 
 tasks.withType<Test> {
