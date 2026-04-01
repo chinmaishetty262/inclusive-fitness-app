@@ -27,7 +27,7 @@ jobs:
           cd frontend
           npm install
           npm run build
-          - name: Start application
+      - name: Start application
         run: |
           cd frontend
           npm start &
