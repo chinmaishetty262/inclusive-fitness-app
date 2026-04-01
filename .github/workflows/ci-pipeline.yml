@@ -27,6 +27,10 @@ jobs:
           cd frontend
           npm install
           npm run build
+          - name: Start application
+        run: |
+          cd frontend
+          npm start &
 
   activity-tracking-ci:
     runs-on: ubuntu-latest
