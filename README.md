@@ -150,6 +150,50 @@ show registered users:
 db.users.find()
 ```
 
+## Running Tests
+
+### Frontend tests
+
+Install dependencies:
+```sh
+cd frontend
+npm install --legacy-peer-deps
+```
+
+Run the frontend test suite, including the cucumber-style BDD tests for statistics and activity feed:
+```sh
+cd frontend
+npm test -- --watchAll=false --runInBand
+```
+
+### Activity-tracking backend tests
+
+Install dependencies:
+```sh
+cd activity-tracking
+npm install
+```
+
+Run the Node.js backend BDD test suite:
+```sh
+cd activity-tracking
+npm test -- --runInBand
+```
+
+### Analytics backend tests
+
+Install dependencies:
+```sh
+cd analytics
+python3 -m pip install -r requirements.txt
+```
+
+Run the Flask analytics BDD test suite:
+```sh
+cd analytics
+python3 -m pytest -q
+```
+
 
 ## Deployment
 The application is containerized using Docker and can be deployed on any platform that supports Docker containers. For AWS deployment, a GitHub Actions pipeline is configured for CI/CD.
