@@ -1,4 +1,4 @@
-name: CI Pipeline - Monorepo
+name: CI Pipeline
 
 on:
   pull_request:
@@ -34,16 +34,28 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: 3.9
+        node-version: 18
 
-      - name: Install Dependencies & Run Tests
+      - name: Install dependencies
         run: |
           cd activity-tracking
-          pip install -r requirements.txt
-          pytest || true
+          npm install
+
+      - name: Start application
+        run: |
+          cd activity-tracking
+          npm start &
+    
+      - name: Wait for app to start
+        run: npx wait-on http://localhost:3000
+
+      - name: Run Cypress tests
+        run: |
+          cd activity-tracking
+          npx cypress run
 
   authservice-ci:
     runs-on: ubuntu-latest
