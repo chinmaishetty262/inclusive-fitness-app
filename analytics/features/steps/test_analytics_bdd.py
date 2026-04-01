@@ -1,5 +1,6 @@
 import importlib
 import os
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,7 +11,8 @@ os.environ.setdefault('MONGO_URI', 'mongodb://localhost:27017/test')
 os.environ.setdefault('MONGO_DB', 'mla_test')
 
 analytics_app = importlib.import_module('app')
-scenarios('../analytics.feature')
+FEATURE_FILE = Path(__file__).resolve().parent.parent / 'analytics.feature'
+scenarios(str(FEATURE_FILE))
 
 
 @pytest.fixture(autouse=True)
