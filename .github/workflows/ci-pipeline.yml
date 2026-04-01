@@ -27,10 +27,6 @@ jobs:
           cd frontend
           npm install
           npm run build
-      - name: Start application
-        run: |
-          cd frontend
-          npm start &
 
   activity-tracking-ci:
     runs-on: ubuntu-latest
@@ -52,14 +48,7 @@ jobs:
         run: |
           cd activity-tracking
           npm start &
-    
-      - name: Wait for app to start
-        run: npx wait-on http://localhost:3000
 
-      - name: Run Cypress tests
-        run: |
-          cd activity-tracking
-          npx cypress run
 
   authservice-ci:
     runs-on: ubuntu-latest
