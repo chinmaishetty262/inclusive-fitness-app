@@ -27,7 +27,7 @@ body {
 }
 
 .appTitle h1 {
-  color: #F54996ff;
+  color: rgb(161, 108, 183);
   font-size: 36px;
   margin: 40px 0 40px 0;
 }
@@ -43,7 +43,7 @@ form {
 
 
 button.navigationButton {
-  background-color: #F54996ff; 
+  background-color: rgb(161, 108, 183);
   color: white; 
   border: none;
   padding: 10px 20px;
@@ -54,7 +54,7 @@ button.navigationButton {
 }
 
 button.navigationButton:hover {
-  background-color: #ff66b2;
+  background-color: rgb(161, 89, 192);
 }
 
 /* Style the success message */
@@ -70,23 +70,23 @@ p.successMessage {
 }
 
 .btn-primary {
-  background-color: #F54996 !important;
-  border-color: #F54996ff !important;
+  background-color:  rgb(161, 89, 192) !important;
+  border-color: rgb(161, 89, 192) !important;
 }
 
 .btn-primary:hover {
-  background-color: #f03087 !important; 
-  border-color: #F54996ff !important; 
+  background-color: rgb(123, 86, 139) !important; 
+  border-color: rgb(161, 89, 192) !important; 
 }
 
 .btn-success {
-  background-color: #F54996 !important;
-  border-color: #F54996ff !important;
+  background-color:  rgb(161, 89, 192) !important;
+  border-color: rgb(161, 89, 192) !important;
 }
 
 .btn-success:hover {
-  background-color: #f03087 !important;  
-  border-color: #F54996ff !important; 
+  background-color: rgb(123, 86, 139) !important;  
+  border-color:rgb(161, 89, 192) !important; 
 }
 
 input#duration {
@@ -110,7 +110,7 @@ input#duration {
 }
 
 .navbar {
-  background-color: #F54996;
+  background-color:  rgb(161, 89, 192);
 }
 
 .navbar-nav {

@@ -5,7 +5,8 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarComponent from './components/navbar';
 import TrackExercise from './components/trackExercise';
-import Statistics from './components/statistics';
+import ActivitiesSummary from './components/statistics';
+import ActivityFeed from './components/activityFeed';
 import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
@@ -31,7 +32,6 @@ function App() {
       <Router>
         <div className="appTitle">
           <h1>MLA Fitness App</h1>
-          <img src={logo} alt="CFG Fitness App Logo" id="appLogo" />
         </div>
 
         {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
@@ -44,7 +44,8 @@ function App() {
               setCurrentUser(username);
             }} />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/statistics" element={isLoggedIn ? <Statistics currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/statistics" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/myfeed" element={isLoggedIn ? <ActivityFeed currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
