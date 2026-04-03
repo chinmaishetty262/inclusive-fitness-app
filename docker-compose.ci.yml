@@ -1,0 +1,43 @@
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: cfgmla23
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh mongodb://root:cfgmla23@localhost:27017/admin --quiet --eval \"db.runCommand({ ping: 1 }).ok\" | grep 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+
+  activity-tracking-test:
+    build:
+      context: ./activity-tracking
+      dockerfile: Dockerfile.test
+
+  analytics-test:
+    build:
+      context: ./analytics
+      dockerfile: Dockerfile.test
+    environment:
+      MONGO_URI: mongodb://root:cfgmla23@mongodb:27017/admin
+      MONGO_DB: test
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  authservice-test:
+    build:
+      context: ./authservice
+      dockerfile: Dockerfile.test
+    environment:
+      SPRING_DATA_MONGODB_DATABASE: test
+      SPRING_DATA_MONGODB_URI: mongodb://root:cfgmla23@mongodb:27017/test?authSource=admin
+    depends_on:
+      mongodb:
+        condition: service_healthy

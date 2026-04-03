@@ -1,0 +1,9 @@
+FROM gradle:7.2-jdk8
+
+WORKDIR /home/gradle/src
+
+COPY . .
+
+RUN chmod +x gradlew
+
+CMD ["./gradlew", "test", "--no-daemon"]

@@ -7,6 +7,153 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+.summary-bubbles {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.summary-bubble {
+    flex: 1 1 140px;
+    min-width: 140px;
+    max-width: 180px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.summary-bubble::before {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.04);
+    line-height: 60px;
+    font-size: 26px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-bubble.bubble-active::before {
+    content: '⚡';
+    background: rgba(255, 204, 0, 0.15);
+}
+
+.summary-bubble.bubble-distance::before {
+    content: '🛣️';
+    background: rgba(0, 148, 255, 0.12);
+}
+
+.summary-bubble.bubble-steps::before {
+    content: '👟';
+    background: rgba(51, 204, 102, 0.15);
+}
+
+.bubble-label {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 12px;
+    min-height: 2.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.section-panel {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+}
+
+.section-panel h4 {
+    margin-bottom: 18px;
+    font-size: 1.2rem;
+    color: #1f2937;
+}
+
+.activity-item,
+.exercise-type-item {
+    background: #f8fafc;
+    border: 1px solid rgba(148,163,184,0.3);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.activity-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.activity-type {
+    font-weight: 700;
+    color: #111827;
+}
+
+.activity-date {
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.activity-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    color: #334155;
+    margin-bottom: 10px;
+}
+
+.activity-description {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.exercise-type-item div {
+    margin-bottom: 6px;
+}
+
+.stats-error,
+.stats-loading {
+    background: #fffbeb;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.no-data-message {
+    color: #475569;
+}
+
+.bubble-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #222;
+}
+
 .exercise-data {
     margin-bottom: 10px;
     padding-top: 20px;
@@ -40,3 +187,4 @@
 .no-data-message {
     color: #888;
 }
+
