@@ -11,7 +11,7 @@ import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal';
-import logo from './img/CFG_logo.png'; // Update the path to your logo file
+// import logo from './img/CFG_logo.png'; // Update the path to your logo file
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
