@@ -1,5 +1,6 @@
 Feature: User Authentication
 
+
   Scenario: User Registration
     Given user provides valid registration details with username "testuser" and password "test123" 
     When user sends POST request to "/register"

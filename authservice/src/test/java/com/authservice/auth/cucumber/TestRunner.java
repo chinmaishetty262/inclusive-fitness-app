@@ -12,7 +12,6 @@ import io.cucumber.junit.CucumberOptions;
                 "summary",
                 "html:build/reports/cucumber.html"
         }
-        
 )
 public class TestRunner {
 }

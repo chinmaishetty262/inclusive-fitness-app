@@ -8,7 +8,7 @@ import io.cucumber.java.en.Then;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// Simple Response class
+
 class Response {
     private final int status;
     private final String message;
@@ -22,7 +22,7 @@ class Response {
     public String getMessage() { return message; }
 }
 
-// Mocked AuthService
+
 class AuthService {
     public Response register(String username, String password) {
         return new Response(201, "User registered");
@@ -33,7 +33,7 @@ class AuthService {
     }
 }
 
-// Step definitions
+
 public class AuthSteps {
 
     private AuthService authService;
@@ -47,13 +47,13 @@ public class AuthSteps {
         authService = mock(AuthService.class);
     }
 
-    // --- Registration ---
+    
     @Given("user provides valid registration details with username {string} and password {string}")
     public void givenUserProvidesDetails(String username, String password) {
     this.testUsername = username;
     this.testPassword = password;
 
-    // Only return 201 for this username scenario
+    
     if (!username.equals("testuser_existing")) {
         when(authService.register(username, password))
                 .thenReturn(new Response(201, "User registered"));
@@ -90,7 +90,7 @@ public class AuthSteps {
         assertEquals("Username already exists", response.getMessage());
     }
 
-    // --- Login ---
+    
     @Given("user is already registered with username {string} and password {string}")
     public void givenUserIsAlreadyRegistered(String username, String password) {
         this.testUsername = username;
