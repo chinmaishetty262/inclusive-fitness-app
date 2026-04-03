@@ -1,4 +1,4 @@
-FROM gradle:7.2-jdk8
+FROM gradle:7.2-jdk17
 
 WORKDIR /home/gradle/src
 
