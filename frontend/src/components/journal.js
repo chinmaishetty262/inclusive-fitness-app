@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 import moment from 'moment';
@@ -9,25 +9,26 @@ const Journal = ({ currentUser }) => {
   const [endDate, setEndDate] = useState(moment().endOf('week').toDate());
   const [exercises, setExercises] = useState([]);
 
-  const fetchExercises = async () => {
-    try {
-      const url = `http://localhost:5050/stats/weekly/?user=${currentUser}&start=${moment(startDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}`;
-      const response = await axios.get(url);
-      console.log('API Response:', response.data);
-      if (response.data.stats && Array.isArray(response.data.stats)) {
-        setExercises(response.data.stats);
-      } else {
-        console.error('Unexpected response structure:', response.data);
-        setExercises([]);
-      }
-    } catch (error) {
-      console.error('Failed to fetch exercises', error);
+  const fetchExercises = useCallback(async () => {
+  try {
+    const url = `http://localhost:5050/stats/weekly/?user=${currentUser}&start=${moment(startDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}`;
+    const response = await axios.get(url);
+    console.log('API Response:', response.data);
+
+    if (response.data.stats && Array.isArray(response.data.stats)) {
+      setExercises(response.data.stats);
+    } else {
+      console.error('Unexpected response structure:', response.data);
+      setExercises([]);
     }
-  };
+  } catch (error) {
+    console.error('Failed to fetch exercises', error);
+  }
+}, [currentUser, startDate, endDate]);
 
   useEffect(() => {
-    fetchExercises();
-  }, [currentUser, startDate, endDate]);
+  fetchExercises();
+}, [fetchExercises]);
 
   const goToPreviousWeek = () => {
     setStartDate(moment(startDate).subtract(1, 'weeks').startOf('week').toDate());
