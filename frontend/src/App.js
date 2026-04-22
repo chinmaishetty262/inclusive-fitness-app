@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import NavbarComponent from './components/navbar';
 import TrackExercise from './components/trackExercise';
 import ActivitiesSummary from './components/statistics';
@@ -11,7 +11,9 @@ import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal';
-// import logo from './img/CFG_logo.png'; // Update the path to your logo file
+import logo from './img/CFG_logo.png';
+import AccessibilityToggle from './components/AccessibilityToggle';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,6 +31,7 @@ function App() {
 
   return (
     <div className="App">
+      <AccessibilityToggle />
       <Router>
         <div className="appTitle">
           <h1>MLA Fitness App</h1>

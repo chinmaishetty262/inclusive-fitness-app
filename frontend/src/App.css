@@ -1,6 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap');
 
-body, html, div, h1, h2, h3, p, button {
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text: #333333;
+  --text-secondary: #555555;
+  --accent: rgb(161, 89, 192);
+  --accent-text: #ffffff;
+  --border: rgb(161, 89, 192);
+  --focus-ring: rgb(161, 89, 192);
+}
+
+.custom-navbar .btn-toggle {
+  display: block !important;
+  visibility: visible !important;
+}
+
+body,
+html,
+div,
+h1,
+h2,
+h3,
+p,
+button {
   margin: 0;
   padding: 0;
   border: 0;
@@ -11,7 +34,7 @@ body, html, div, h1, h2, h3, p, button {
 
 body {
   line-height: 1;
-  color: #333; 
+  color: #333;
 }
 
 #appLogo {
@@ -27,7 +50,7 @@ body {
 }
 
 .appTitle h1 {
-  color: rgb(161, 108, 183);
+  color: var(--accent);
   font-size: 36px;
   margin: 40px 0 40px 0;
 }
@@ -43,18 +66,18 @@ form {
 
 
 button.navigationButton {
-  background-color: rgb(161, 108, 183);
-  color: white; 
+  background-color: var(--accent);
+  color: var(--accent-text);
   border: none;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--accent) 0.3s ease;
   margin-bottom: 50px;
 }
 
 button.navigationButton:hover {
-  background-color: rgb(161, 89, 192);
+  background-color: var(--accent);
 }
 
 /* Style the success message */
@@ -65,33 +88,33 @@ p.successMessage {
 
 .componentContainer {
   padding: 30px;
-  background-color: #f0f0f0; 
-  border-radius: 5px; 
+  background-color: var(--bg-secondary);
+  border-radius: 5px;
 }
 
-.btn-primary {
-  background-color:  rgb(161, 89, 192) !important;
-  border-color: rgb(161, 89, 192) !important;
+button.btn.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-primary:hover {
-  background-color: rgb(123, 86, 139) !important; 
-  border-color: rgb(161, 89, 192) !important; 
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-success {
-  background-color:  rgb(161, 89, 192) !important;
-  border-color: rgb(161, 89, 192) !important;
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-success:hover {
-  background-color: rgb(123, 86, 139) !important;  
-  border-color:rgb(161, 89, 192) !important; 
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 input#duration {
-  width: 20%; 
-  margin: auto; 
+  width: 20%;
+  margin: auto;
 }
 
 .form-margin {
@@ -103,14 +126,14 @@ input#duration {
   text-align: center;
   padding: 10px;
   font-size: 12px;
-  color: lightgrey;
+  color: var(--text-secondary);
   position: relative;
   bottom: 0;
   width: 100%;
 }
 
 .navbar {
-  background-color:  rgb(161, 89, 192);
+  background-color: var(--accent);
 }
 
 .navbar-nav {
@@ -123,4 +146,93 @@ input#duration {
 
 .signup {
   margin: 20px;
+}
+
+/* button.btn-toggle {
+  padding: 8px 14px !important;
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border: 2px solid white !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  margin-left: 16px;
+} */
+
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --bg-secondary: #1a1a1a;
+  --text: #ffffff;
+  --text-secondary: #e0e0e0;
+  --accent: #ffff00;
+  --accent-text: #000000;
+  --border: #ffffff;
+  --focus-ring: #ffff00;
+}
+
+[data-theme="high-contrast"] body,
+[data-theme="high-contrast"] .App,
+[data-theme="high-contrast"] .componentContainer {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .appTitle h1 {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .navbar,
+[data-theme="high-contrast"] .nav-back {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link,
+[data-theme="high-contrast"] .nav-link {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] label,
+[data-theme="high-contrast"] p,
+[data-theme="high-contrast"] h1,
+[data-theme="high-contrast"] h2,
+[data-theme="high-contrast"] h3 {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] button.btn.btn-primary {
+  color: var(--bg) !important;
+  font-weight: 550 !important;
+
+}
+
+[data-theme="high-contrast"] .form-control::placeholder {
+  color: var(--text) !important;
+  opacity: 1;
+}
+
+[data-theme="high-contrast"] button.btn.btn-success {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg) !important;
+  font-weight: 550 !important;
+}
+
+/* ALL icons (default state) */
+[data-theme="high-contrast"] .MuiIconButton-root .MuiSvgIcon-root {
+  color: var(--text) !important;
+}
+
+/* SELECTED icons */
+[data-theme="high-contrast"] .MuiIconButton-root.MuiIconButton-colorPrimary .MuiSvgIcon-root {
+  color: var(--accent) !important;
 }
