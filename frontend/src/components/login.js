@@ -4,7 +4,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
-  const [username, setUsername] = useState('');
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -12,20 +13,30 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/login', {
-        username,
-        password,
-      });
+      const response = await axios.post(
+        'http://localhost:8080/api/auth/login',
+        {
+          email,
+          password
+        }
+      );
 
       if (response.status === 200) {
-        onLogin(username);
-      } else {
-        setError('Invalid credentials');
+
+        const token = response.data.token;
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", email);
+
+        onLogin(email);
+
       }
-    } catch (err) {
-      setError('Failed to login');
-    }
-};
+
+    } catch(err){
+   console.log(err.response.data);
+   setError(err.response?.data?.message || "Login failed");
+}
+  };
 
   return (
     <div className="login-container">
@@ -33,34 +44,37 @@ const Login = ({ onLogin }) => {
       {error && <Alert variant="danger">{error}</Alert>}
 
       <Form onSubmit={handleLogin}>
-        <Form.Group controlId="formUsername">
-          <Form.Label>Username</Form.Label>
-          <Form.Control 
-            type="text" 
-            placeholder="Enter username" 
-            value={username} 
-            onChange={(e) => setUsername(e.target.value)} 
+
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </Form.Group>
 
-        <Form.Group controlId="formPassword">
+        <Form.Group>
           <Form.Label>Password</Form.Label>
-          <Form.Control 
-            type="password" 
-            placeholder="Password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
+          <Form.Control
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" style={{ marginTop: '20px' }}>
+        <Button type="submit" style={{ marginTop: '20px' }}>
           Login
         </Button>
+
       </Form>
 
       <p className="mt-3">
-    Don't have an account? <Link to="/signup">Sign up</Link>
-</p>
+        Don't have an account? <Link to="/signup">Sign up</Link>
+      </p>
+
     </div>
   );
 };
