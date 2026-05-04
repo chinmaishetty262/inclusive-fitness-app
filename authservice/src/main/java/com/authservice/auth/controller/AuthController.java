@@ -6,6 +6,7 @@ import com.authservice.auth.dto.RegisterRequest;
 import com.authservice.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.*;
 import com.authservice.auth.service.AuthService;
@@ -35,7 +36,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
-        System.out.println("LOGIN API CALLED");
-        return ResponseEntity.ok(authService.login(request));
+        String token = authService.login(request);
+
+    return ResponseEntity.ok(
+            Map.of(
+                "message", "Login successful",
+                "token", token
+            )
+    );
     }
 }
