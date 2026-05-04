@@ -36,9 +36,9 @@ services:
       context: ./authservice
       dockerfile: Dockerfile.test
     environment:
-      SPRING_DATA_MONGODB_DATABASE: test
+      SPRING_DATA_MONGODB_DATABASE: test 
       SPRING_DATA_MONGODB_URI: mongodb://root:cfgmla23@mongodb:27017/test?authSource=admin
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       mongodb:
         condition: service_healthy
