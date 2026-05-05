@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Link } from 'react-router-dom';
 
 const Login = ({ onLogin }) => {
@@ -13,8 +13,8 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        'http://localhost:8080/api/auth/login',
+      const response = await axiosInstance.post(
+        '/api/auth/login',
         {
           email,
           password

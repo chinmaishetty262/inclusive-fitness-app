@@ -58,7 +58,21 @@ public class AuthServiceImpl implements AuthService {
     if (!passwordMatches) {
         throw new RuntimeException("Invalid credentials");
     }
-    //return "Authneticated";
+    
     return jwtUtil.generateToken(existingUser.getEmail());
     }
+
+    @Override
+    public String validateToken(String token) {
+
+    boolean isValid = jwtUtil.validateToken(token);
+
+    if (!isValid) {
+        throw new RuntimeException("Invalid or expired token");
+    }
+
+    String username = jwtUtil.extractUsername(token);
+
+    return "Token is valid for user: " + username;
+}
 }

@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import axios from 'axios';
+import axiosInstance from '../components/axiosInstance';
 import ActivitiesSummary from './statistics';
 
-jest.mock('axios');
+jest.mock('../components/axiosInstance');
 
 const feature = loadFeature('./src/components/features/statistics.feature');
 
@@ -18,7 +18,7 @@ defineFeature(feature, test => {
 
   test('Showing summary totals for the current user', ({ given, when, then, and }) => {
     given('the statistics service returns totals for the current user', () => {
-      axios.get.mockResolvedValueOnce({
+      axiosInstance.get.mockResolvedValueOnce({
         data: {
           stats: [
             {
@@ -52,7 +52,7 @@ defineFeature(feature, test => {
 
   test('Showing fallback totals for missing values', ({ given, when, then }) => {
     given('the statistics service returns activity totals with missing distance or steps values', () => {
-      axios.get.mockResolvedValueOnce({
+      axiosInstance.get.mockResolvedValueOnce({
         data: {
           stats: [
             {
@@ -80,7 +80,7 @@ defineFeature(feature, test => {
 
   test('Showing an error when statistics cannot be loaded', ({ given, when, then }) => {
     given('the statistics service request fails', () => {
-      axios.get.mockRejectedValueOnce(new Error('Network error'));
+      axiosInstance.get.mockRejectedValueOnce(new Error('Network error'));
     });
 
     when('the statistics summary is opened for that user', () => {
@@ -94,7 +94,7 @@ defineFeature(feature, test => {
 
   test('Showing no activity totals when none exist', ({ given, when, then }) => {
     given('the statistics service returns no exercise totals for the current user', () => {
-      axios.get.mockResolvedValueOnce({
+      axiosInstance.get.mockResolvedValueOnce({
         data: {
           stats: [
             {

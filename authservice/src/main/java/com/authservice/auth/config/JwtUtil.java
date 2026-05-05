@@ -12,7 +12,7 @@ import java.util.Date;
 public class JwtUtil {
     
     @Value("${jwt.secret}")
-    private String secret;   // "mySuperSecureJwtSecretKey12345678901234567890"
+    private String secret;   
    
           
     private final long EXPIRATION = 1000 * 60 * 60; 
@@ -22,7 +22,6 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
-        System.out.println("-------------------------Inside generateToken-------------------------");
         
         return Jwts.builder()
                 .setSubject(username)
@@ -32,5 +31,27 @@ public class JwtUtil {
                 )
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    
+    public boolean validateToken(String token) {
+    try {
+        Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token);
+        return true;
+    } catch (JwtException e) {
+        return false;
+    }
+    }
+
+    public String extractUsername(String token) {
+    return Jwts.parserBuilder()
+            .setSigningKey(getSigningKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .getSubject();
     }
 }
