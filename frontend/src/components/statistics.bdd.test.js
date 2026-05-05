@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '../components/axiosInstance';
 import ActivitiesSummary from './statistics';
 
-jest.mock('axiosInstance');
+jest.mock('../components/axiosInstance');
 
 const feature = loadFeature('./src/components/features/statistics.feature');
 
