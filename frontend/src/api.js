@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './components/axiosInstance';
 
 function getUrl() {
     if (process.env.CODESPACES === "true") {
@@ -10,7 +10,7 @@ function getUrl() {
 
 const baseURL = getUrl();
 
-const api = axios.create({
+const api = axiosInstance.create({
     baseURL
 });
 

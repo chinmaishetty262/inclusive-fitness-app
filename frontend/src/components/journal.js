@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Button } from 'react-bootstrap';
 import moment from 'moment';
 import './journal.css';
@@ -12,7 +12,7 @@ const Journal = ({ currentUser }) => {
   const fetchExercises = useCallback(async () => {
   try {
     const url = `http://localhost:5050/stats/weekly/?user=${currentUser}&start=${moment(startDate).format('YYYY-MM-DD')}&end=${moment(endDate).format('YYYY-MM-DD')}`;
-    const response = await axios.get(url);
+    const response = await axiosInstance.get(url);
     console.log('API Response:', response.data);
 
     if (response.data.stats && Array.isArray(response.data.stats)) {

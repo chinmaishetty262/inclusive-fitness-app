@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import './statistics.css';
 
 const ActivitiesSummary = ({ currentUser }) => {
@@ -12,7 +12,7 @@ const ActivitiesSummary = ({ currentUser }) => {
     setLoading(true);
     setError('');
 
-    axios.get(statsUrl)
+    axiosInstance.get(statsUrl)
       .then((statsRes) => {
         setAggregatedStats(statsRes.data.stats || []);
       })

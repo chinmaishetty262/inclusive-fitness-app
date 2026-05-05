@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import ActivityFeed from './activityFeed';
 
-jest.mock('axios');
+jest.mock('axiosInstance');
 
 const feature = loadFeature('./src/components/features/activityFeed.feature');
 
@@ -18,7 +18,7 @@ defineFeature(feature, test => {
 
   test('Showing the current user\'s recent activities', ({ given, when, then }) => {
     given('the activity service returns recent activities for the current user', () => {
-      axios.get.mockResolvedValueOnce({
+      axiosInstance.get.mockResolvedValueOnce({
         data: [
           {
             username: 'testuser',
@@ -57,7 +57,7 @@ defineFeature(feature, test => {
 
   test('Showing an error when the feed cannot be loaded', ({ given, when, then }) => {
     given('the activity service request fails', () => {
-      axios.get.mockRejectedValueOnce(new Error('Network error'));
+      axiosInstance.get.mockRejectedValueOnce(new Error('Network error'));
     });
 
     when('the activity feed is opened for that user', () => {
@@ -71,7 +71,7 @@ defineFeature(feature, test => {
 
   test('Showing an empty feed when the user has no activities', ({ given, when, then }) => {
     given('the activity service returns no activities for the current user', () => {
-      axios.get.mockResolvedValueOnce({ data: [] });
+      axiosInstance.get.mockResolvedValueOnce({ data: [] });
     });
 
     when('the activity feed is opened for that user', () => {

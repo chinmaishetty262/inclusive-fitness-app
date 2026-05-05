@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Link } from 'react-router-dom';
 
 const Signup = ({ onSignup }) => {
@@ -18,7 +18,7 @@ const Signup = ({ onSignup }) => {
     setError('');
 
     try {
-        const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
+        const response = await axiosInstance.post('api/auth/signup', formData);
 
         if (response.data === 'User registered successfully!') {
             console.log('User registered successfully');

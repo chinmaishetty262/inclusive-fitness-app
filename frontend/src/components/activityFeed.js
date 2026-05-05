@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import './statistics.css';
 
 const ActivityFeed = ({ currentUser }) => {
@@ -12,7 +12,7 @@ const ActivityFeed = ({ currentUser }) => {
     setLoading(true);
     setError('');
 
-    axios.get(url)
+    axiosInstance.get(url)
       .then((response) => {
         const rawActivities = Array.isArray(response.data) ? response.data : [];
         const filteredActivities = rawActivities
