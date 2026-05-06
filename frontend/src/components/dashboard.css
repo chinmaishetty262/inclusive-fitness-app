@@ -54,3 +54,27 @@
   background-color: var(--accent-highlight) !important;
   border-color: var(--accent-highlight) !important;
 }
+
+/* Additional high contrast styles for dashboard */
+[data-theme="high-contrast"] .dashboard-container {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+/* High contrast styles for summary sections */
+[data-theme="high-contrast"] .section-summary {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .section-summary h4 {
+  color: var(--accent) !important;
+}
+
+/* High contrast styles for dashboard sections */
+[data-theme="high-contrast"] .dashboard-summary-section,
+[data-theme="high-contrast"] .dashboard-feed-section {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}

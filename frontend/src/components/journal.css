@@ -36,3 +36,21 @@ li {
     padding: 5px 10px;
     font-size: 0.8rem;
 }
+
+/* High contrast mode styles */
+[data-theme="high-contrast"] .journal-container {
+    background-color: var(--bg-secondary) !important;
+    border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] li {
+    background: var(--bg) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+/* High contrast styles for journal titles */
+[data-theme="high-contrast"] .journal-container h3,
+[data-theme="high-contrast"] .journal-container h4 {
+    color: var(--accent) !important;
+}

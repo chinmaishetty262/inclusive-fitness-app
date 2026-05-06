@@ -55,7 +55,7 @@ const ActivityFeed = ({ currentUser }) => {
               </div>
               <div className="activity-details">
                 <span>Duration: {item.duration ?? 0} min</span>
-                <span>Distance: {item.distance ?? 0} km</span>
+                <span>Distance: {(item.distance ?? 0).toFixed(2)} km</span>
                 <span>Steps: {item.steps ?? 0}</span>
               </div>
               {item.description && <div className="activity-description"><strong>Description:</strong> {item.description}</div>}

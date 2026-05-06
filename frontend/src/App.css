@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
   --bg: #f7fbff;
@@ -32,7 +32,7 @@ button {
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: 'Barlow', sans-serif;
+  font-family: 'Inter', sans-serif;
   vertical-align: baseline;
 }
 
@@ -142,30 +142,39 @@ input#duration {
 .navbar {
   background-color: var(--accent);
   min-height: 60px;
-  padding: 8px 0;
+  padding: 12px 20px;
+  border-radius: 16px;
+  margin: 16px 20px 0 20px;
+  box-shadow: 0 4px 12px rgba(31, 114, 255, 0.15);
 }
 
 .navbar-nav {
   margin: 0 auto !important;
   width: 100%;
   justify-content: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .custom-nav-link {
-  margin-right: 20px;
+  margin-right: 12px;
   display: inline-flex !important;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--accent-text) !important;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
   white-space: nowrap;
+  font-weight: 500;
+}
+
+.custom-nav-link:last-child {
+  margin-right: 0;
 }
 
 .custom-nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 .custom-nav-link .nav-logo {
@@ -233,6 +242,7 @@ input#duration {
   --accent-text: #000000;
   --border: #ffffff;
   --focus-ring: #ffff00;
+  --muted-bg: #2a2a2a;
 }
 
 [data-theme="high-contrast"] body,
@@ -249,12 +259,34 @@ input#duration {
 [data-theme="high-contrast"] .navbar,
 [data-theme="high-contrast"] .nav-back {
   background-color: var(--bg-secondary) !important;
-  border-bottom: 2px solid var(--border) !important;
+  border: 2px solid var(--border) !important;
+  border-radius: 16px !important;
+  margin: 16px 20px 0 20px !important;
+  overflow: hidden !important;
+}
+
+[data-theme="high-contrast"] .navbar-nav {
+  flex-wrap: wrap !important;
+  justify-content: center !important;
 }
 
 [data-theme="high-contrast"] .custom-nav-link,
 [data-theme="high-contrast"] .nav-link {
   color: var(--text) !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link:last-child,
+[data-theme="high-contrast"] .nav-link:last-child {
+  margin-right: 0 !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link:hover,
+[data-theme="high-contrast"] .nav-link:hover {
+  background-color: var(--muted-bg) !important;
+  transform: translateY(-2px) !important;
 }
 
 [data-theme="high-contrast"] input,
@@ -265,12 +297,129 @@ input#duration {
   border: 2px solid var(--border) !important;
 }
 
-[data-theme="high-contrast"] label,
-[data-theme="high-contrast"] p,
 [data-theme="high-contrast"] h1,
 [data-theme="high-contrast"] h2,
-[data-theme="high-contrast"] h3 {
+[data-theme="high-contrast"] h3,
+[data-theme="high-contrast"] h4,
+[data-theme="high-contrast"] h5,
+[data-theme="high-contrast"] h6 {
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="high-contrast"] .exercise-type-selection {
+  background: var(--muted-bg) !important;
+  border: 2px solid var(--border) !important;
+}
+
+/* Additional high contrast styles for forms and components */
+[data-theme="high-contrast"] .track-form-container,
+[data-theme="high-contrast"] .signup-container,
+[data-theme="high-contrast"] .login-container {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
   color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .track-form-container h3,
+[data-theme="high-contrast"] .signup-container h3,
+[data-theme="high-contrast"] .login-container h3 {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .warning-message,
+[data-theme="high-contrast"] .success-message {
+  color: var(--accent-highlight) !important;
+  border: 2px solid var(--accent-highlight) !important;
+  background: rgba(0, 255, 255, 0.1) !important;
+}
+
+/* High contrast styles for date picker and other components */
+[data-theme="high-contrast"] .react-datepicker-wrapper,
+[data-theme="high-contrast"] .react-datepicker__input-container input {
+  background: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__header {
+  background: var(--muted-bg) !important;
+  border-bottom: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__current-month,
+[data-theme="high-contrast"] .react-datepicker__day-name {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day:hover {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day--selected {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+}
+
+/* High contrast styles for buttons and interactive elements */
+[data-theme="high-contrast"] button {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border: 2px solid var(--accent) !important;
+}
+
+[data-theme="high-contrast"] button:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+[data-theme="high-contrast"] button:disabled {
+  background: var(--muted-bg) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border) !important;
+}
+
+/* High contrast styles for links */
+[data-theme="high-contrast"] a {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+}
+
+[data-theme="high-contrast"] a:hover {
+  color: var(--accent-hover) !important;
+}
+
+/* High contrast styles for input elements */
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  background: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] input:focus,
+[data-theme="high-contrast"] select:focus,
+[data-theme="high-contrast"] textarea:focus {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* High contrast styles for footer */
+[data-theme="high-contrast"] .footer {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border-top: 2px solid var(--border) !important;
 }
 
 [data-theme="high-contrast"] button.btn.btn-primary {
@@ -374,6 +523,17 @@ input#duration {
 .form-field-group .form-control:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 0.2rem rgba(31, 114, 255, 0.25);
+}
+
+.form-field-group .form-control[type="number"] {
+  -moz-appearance: textfield;
+  padding-right: 16px;
+}
+
+.form-field-group .form-control[type="number"]::-webkit-outer-spin-button,
+.form-field-group .form-control[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .form-field-group .form-control:invalid {

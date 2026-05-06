@@ -105,7 +105,7 @@ const ActivitiesSummary = ({ currentUser, showSummaryOnly = false, hideSummaryTi
                 </div>
                 <div className="summary-bubble bubble-distance">
                   <div className="bubble-label">Distance</div>
-                  <div className="bubble-value">{totalDistance} km</div>
+                  <div className="bubble-value">{totalDistance.toFixed(2)} km</div>
                 </div>
                 <div className="summary-bubble bubble-steps">
                   <div className="bubble-label">Steps</div>
@@ -192,7 +192,7 @@ const ActivitiesSummary = ({ currentUser, showSummaryOnly = false, hideSummaryTi
                     <div key={index} className="exercise-data exercise-type-item">
                       <div><strong>{item.exerciseType}</strong></div>
                       <div>Duration: {item.totalDuration ?? 0} min</div>
-                      <div>Distance: {item.totalDistance ?? 0} km</div>
+                      <div>Distance: {(item.totalDistance ?? 0).toFixed(2)} km</div>
                       <div>Steps: {item.totalSteps ?? 0}</div>
                     </div>
                   ))

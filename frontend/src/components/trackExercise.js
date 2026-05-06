@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { trackExercise } from '../api';
@@ -27,11 +27,25 @@ const TrackExercise = ({ currentUser }) => {
   const [saved, setSaved] = useState(false);
 
   const isValidNumber = (value) => Number(value) > 0;
-  const isFormValid = state.exerciseType &&
-    state.description.trim() !== '' &&
-    isValidNumber(state.duration) &&
-    isValidNumber(state.distance) &&
-    isValidNumber(state.steps);
+  
+  const isFormValid = () => {
+    if (!state.exerciseType || state.description.trim() === '' || !isValidNumber(state.duration)) {
+      return false;
+    }
+    
+    // Swimming doesn't require steps
+    if (state.exerciseType === 'Swimming') {
+      return isValidNumber(state.distance);
+    }
+    
+    // Gym doesn't require distance
+    if (state.exerciseType === 'Gym') {
+      return isValidNumber(state.steps);
+    }
+    
+    // Other exercise types require both distance and steps
+    return isValidNumber(state.distance) && isValidNumber(state.steps);
+  };
 
   const getFieldValidationClass = (fieldName, value) => {
     if (value === '' || (fieldName === 'description' && value.trim() === '')) {
@@ -46,11 +60,15 @@ const TrackExercise = ({ currentUser }) => {
     return value ? 'is-valid' : 'is-invalid';
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormValid) {
-      setWarning('Please select an exercise type and fill in all fields before saving.');
+    if (!isFormValid()) {
+      setWarning('Please select an exercise type and fill in all required fields before saving.');
       return;
     }
 
@@ -175,38 +193,45 @@ const TrackExercise = ({ currentUser }) => {
             min="1"
             placeholder="e.g., 30"
             value={state.duration}
+            onWheel={(e) => e.preventDefault()}
             onChange={(e) => { setState({ ...state, duration: e.target.value }); setWarning(''); }}
             className={getFieldValidationClass('duration', state.duration)}
           />
           {!isValidNumber(state.duration) && <div className="invalid-feedback d-block">Please enter a valid duration greater than 0.</div>}
         </div>
 
-        <div className="form-field-group">
-          <Form.Label>Distance (km) *</Form.Label>
-          <Form.Control
-            type="number"
-            min="0.1"
-            step="0.1"
-            placeholder="e.g., 5.2"
-            value={state.distance}
-            onChange={(e) => { setState({ ...state, distance: e.target.value }); setWarning(''); }}
-            className={getFieldValidationClass('distance', state.distance)}
-          />
-          {!isValidNumber(state.distance) && <div className="invalid-feedback d-block">Please enter a valid distance greater than 0.</div>}
-        </div>
+        {state.exerciseType !== 'Gym' && (
+          <div className="form-field-group">
+            <Form.Label>Distance (km) {state.exerciseType !== 'Gym' ? '*' : ''}</Form.Label>
+            <Form.Control
+              type="number"
+              min="0.01"
+              step="any"
+              placeholder="e.g., 5.2"
+              value={state.distance}
+              onWheel={(e) => e.preventDefault()}
+              onChange={(e) => { setState({ ...state, distance: e.target.value }); setWarning(''); }}
+              className={getFieldValidationClass('distance', state.distance)}
+            />
+            {!isValidNumber(state.distance) && <div className="invalid-feedback d-block">Please enter a valid distance greater than 0.</div>}
+          </div>
+        )}
 
-        <div className="form-field-group">
-          <Form.Label>Steps *</Form.Label>
-          <Form.Control
-            type="number"
-            min="1"
-            placeholder="e.g., 6000"
-            value={state.steps}
-            onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
-            className={getFieldValidationClass('steps', state.steps)}
-          />
-          {!isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
-        </div>
+        {state.exerciseType !== 'Swimming' && (
+          <div className="form-field-group">
+            <Form.Label>Steps {state.exerciseType !== 'Swimming' ? '*' : ''}</Form.Label>
+            <Form.Control
+              type="number"
+              min="1"
+              placeholder="e.g., 6000"
+              value={state.steps}
+              onWheel={(e) => e.preventDefault()}
+              onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
+              className={getFieldValidationClass('steps', state.steps)}
+            />
+            {!isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
+          </div>
+        )}
 
         <div className="form-field-group">
           <Form.Label>Date</Form.Label>
@@ -222,8 +247,8 @@ const TrackExercise = ({ currentUser }) => {
           <Button
             variant="success"
             type="submit"
-            disabled={!isFormValid}
-            style={{ opacity: isFormValid ? 1 : 0.65, cursor: isFormValid ? 'pointer' : 'not-allowed' }}
+            disabled={!isFormValid()}
+            style={{ opacity: isFormValid() ? 1 : 0.65, cursor: isFormValid() ? 'pointer' : 'not-allowed' }}
           >
             Save Activity
           </Button>
