@@ -63,7 +63,7 @@ defineFeature(feature, test => {
     then('the dashboard shows activity summary bubbles', async () => {
       expect(await screen.findByText('Active Minutes')).toBeInTheDocument();
       expect(screen.getByText('30')).toBeInTheDocument();
-      expect(screen.getByText('5 km')).toBeInTheDocument();
+      expect(screen.getByText('5.00 km')).toBeInTheDocument();
     });
 
     and('the dashboard shows the track activity button', () => {
