@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import axiosInstance from '../components/axiosInstance';
 import ActivitiesSummary from './statistics';
@@ -88,7 +88,7 @@ defineFeature(feature, test => {
     });
 
     then('the statistics view shows a load error', async () => {
-      await waitFor(() => expect(screen.getByText(/Unable to load statistics right now/i)).toBeInTheDocument());
+      expect(await screen.findByText(/Unable to load statistics right now/i)).toBeInTheDocument();
     });
   });
 
@@ -111,7 +111,52 @@ defineFeature(feature, test => {
     });
 
     then('the statistics view shows that no activity type totals are available', async () => {
-      await waitFor(() => expect(screen.getByText(/No activity type totals available/i)).toBeInTheDocument());
+      expect(await screen.findByText(/No activity type totals available/i)).toBeInTheDocument();
+    });
+  });
+
+  test('Updating statistics when the selected user changes', ({ given, when, then }) => {
+    given('the statistics service returns totals for the first user and then for a second user', () => {
+      axiosInstance.get
+        .mockResolvedValueOnce({
+          data: {
+            stats: [
+              {
+                username: 'testuser',
+                exercises: [
+                  { exerciseType: 'Running', totalDuration: 25, totalDistance: 4, totalSteps: 4000 }
+                ]
+              }
+            ]
+          }
+        })
+        .mockResolvedValueOnce({ data: { stats: [] } })
+        .mockResolvedValueOnce({
+          data: {
+            stats: [
+              {
+                username: 'seconduser',
+                exercises: [
+                  { exerciseType: 'Cycling', totalDuration: 40, totalDistance: 12, totalSteps: 0 }
+                ]
+              }
+            ]
+          }
+        })
+        .mockResolvedValueOnce({ data: { stats: [] } });
+    });
+
+    when('the statistics summary is opened for the first user and then updated for the second user', async () => {
+      const { rerender } = render(<ActivitiesSummary currentUser={currentUser} />);
+      await screen.findByText('Running');
+
+      rerender(<ActivitiesSummary currentUser="seconduser" />);
+    });
+
+    then('the summary bubbles update to reflect the second user\'s totals', async () => {
+      await screen.findByText('Cycling');
+      expect(screen.getByText('40')).toBeInTheDocument();
+      expect(screen.getByText('12 km')).toBeInTheDocument();
     });
   });
 });

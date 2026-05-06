@@ -23,3 +23,8 @@ Feature: Statistics summary
     Given the statistics service returns no exercise totals for the current user
     When the statistics summary is opened for that user
     Then the statistics view shows that no activity type totals are available
+
+  Scenario: Updating statistics when the selected user changes
+    Given the statistics service returns totals for the first user and then for a second user
+    When the statistics summary is opened for the first user and then updated for the second user
+    Then the summary bubbles update to reflect the second user's totals

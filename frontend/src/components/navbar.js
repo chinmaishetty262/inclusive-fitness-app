@@ -8,14 +8,14 @@ const NavbarComponent = ({ onLogout }) => {
   const onNavigate = (route) => {
     console.log('Navigating to:', route);
     switch (route) {
-      case 'TrackExercise':
+      case 'Home':
+        navigate('/');
+        break;
+      case 'Track':
         navigate('/trackExercise');
         break;
-      case 'ActivitiesSummary':
-        navigate('/statistics');
-        break;
-      case 'MyFeed':
-        navigate('/myfeed');
+      case 'Fitness':
+        navigate('/fitness');
         break;
       case 'Journal':
         navigate('/journal');
@@ -26,18 +26,31 @@ const NavbarComponent = ({ onLogout }) => {
   };
 
   return (
-    <Navbar className="nav-back custom-navbar" expand="lg">
+    <Navbar className="nav-back custom-navbar" expand="lg" sticky="top">
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="mr-auto">
           <Nav>
-            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('TrackExercise')}>Track New Exercise</Nav.Link>
-            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('ActivitiesSummary')}>Activities Summary</Nav.Link>
-            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('MyFeed')}>My Feed</Nav.Link>
-            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Journal')}>Weekly Journal</Nav.Link>
-            <Nav.Link className="custom-nav-link" onClick={onLogout}>Logout</Nav.Link>
-            <Nav.Item className="d-flex align-items-center">
-            </Nav.Item>
+            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Home')}>
+              <span className="nav-icon">🏠</span>
+              <span>Home</span>
+            </Nav.Link>
+            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Track')}>
+              <span className="nav-icon">🏃</span>
+              <span>Track</span>
+            </Nav.Link>
+            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Fitness')}>
+              <span className="nav-icon">📊</span>
+              <span>Fitness</span>
+            </Nav.Link>
+            <Nav.Link className="custom-nav-link" onClick={() => onNavigate('Journal')}>
+              <span className="nav-icon">📔</span>
+              <span>Journal</span>
+            </Nav.Link>
+            <Nav.Link className="custom-nav-link logout-link" onClick={onLogout}>
+              <span className="nav-icon">🚪</span>
+              <span>Logout</span>
+            </Nav.Link>
           </Nav>
         </Nav>
       </Navbar.Collapse>

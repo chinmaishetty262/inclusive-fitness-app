@@ -33,6 +33,19 @@ const TrackExercise = ({ currentUser }) => {
     isValidNumber(state.distance) &&
     isValidNumber(state.steps);
 
+  const getFieldValidationClass = (fieldName, value) => {
+    if (value === '' || (fieldName === 'description' && value.trim() === '')) {
+      return 'is-invalid';
+    }
+    if (fieldName === 'exerciseType') {
+      return value ? 'is-valid' : 'is-invalid';
+    }
+    if (['duration', 'distance', 'steps'].includes(fieldName)) {
+      return isValidNumber(value) ? 'is-valid' : 'is-invalid';
+    }
+    return value ? 'is-valid' : 'is-invalid';
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -83,7 +96,7 @@ const TrackExercise = ({ currentUser }) => {
           <Button variant="secondary" onClick={() => setSaved(false)}>
             Add another activity
           </Button>
-          <Button variant="primary" onClick={() => navigate('/statistics')}>
+          <Button variant="primary" onClick={() => navigate('/fitness')}>
             View Activities Summary
           </Button>
         </div>
@@ -92,86 +105,132 @@ const TrackExercise = ({ currentUser }) => {
   }
 
   return (
-    <div>
-      <h3>Track exercise</h3>
-      <Form onSubmit={onSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
+    <div className="track-form-container">
+      <h3>Track Your Activity</h3>
+      <Form onSubmit={onSubmit}>
+        <div className="form-field-group">
+          <Form.Label>Activity Type *</Form.Label>
+          <div className="exercise-type-selection">
+            <IconButton
+              color={state.exerciseType === 'Running' ? "primary" : "default"}
+              className={state.exerciseType === 'Running' ? 'selected' : ''}
+              onClick={() => { setState({ ...state, exerciseType: 'Running' }); setWarning(''); }}
+              title="Running"
+            >
+              <DirectionsRunIcon fontSize="large" />
+            </IconButton>
+            <IconButton
+              color={state.exerciseType === 'Cycling' ? "primary" : "default"}
+              className={state.exerciseType === 'Cycling' ? 'selected' : ''}
+              onClick={() => { setState({ ...state, exerciseType: 'Cycling' }); setWarning(''); }}
+              title="Cycling"
+            >
+              <BikeIcon fontSize="large" />
+            </IconButton>
+            <IconButton
+              color={state.exerciseType === 'Swimming' ? "primary" : "default"}
+              className={state.exerciseType === 'Swimming' ? 'selected' : ''}
+              onClick={() => { setState({ ...state, exerciseType: 'Swimming' }); setWarning(''); }}
+              title="Swimming"
+            >
+              <PoolIcon fontSize="large" />
+            </IconButton>
+            <IconButton
+              color={state.exerciseType === 'Gym' ? "primary" : "default"}
+              className={state.exerciseType === 'Gym' ? 'selected' : ''}
+              onClick={() => { setState({ ...state, exerciseType: 'Gym' }); setWarning(''); }}
+              title="Gym"
+            >
+              <FitnessCenterIcon fontSize="large" />
+            </IconButton>
+            <IconButton
+              color={state.exerciseType === 'Other' ? "primary" : "default"}
+              className={state.exerciseType === 'Other' ? 'selected' : ''}
+              onClick={() => { setState({ ...state, exerciseType: 'Other' }); setWarning(''); }}
+              title="Other"
+            >
+              <OtherIcon fontSize="large" />
+            </IconButton>
+          </div>
+          {!state.exerciseType && <div className="invalid-feedback d-block">Please select an activity type.</div>}
+        </div>
 
-        <Form.Group controlId="formDate" className="form-margin">
-          <Form.Label>Date:</Form.Label>
+        <div className="form-field-group">
+          <Form.Label>Description *</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder="Describe your activity (e.g., 'Morning run in the park')"
+            value={state.description}
+            onChange={(e) => { setState({ ...state, description: e.target.value }); setWarning(''); }}
+            className={getFieldValidationClass('description', state.description)}
+          />
+          {state.description.trim() === '' && <div className="invalid-feedback d-block">Please provide a description of your activity.</div>}
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Duration (minutes) *</Form.Label>
+          <Form.Control
+            type="number"
+            min="1"
+            placeholder="e.g., 30"
+            value={state.duration}
+            onChange={(e) => { setState({ ...state, duration: e.target.value }); setWarning(''); }}
+            className={getFieldValidationClass('duration', state.duration)}
+          />
+          {!isValidNumber(state.duration) && <div className="invalid-feedback d-block">Please enter a valid duration greater than 0.</div>}
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Distance (km) *</Form.Label>
+          <Form.Control
+            type="number"
+            min="0.1"
+            step="0.1"
+            placeholder="e.g., 5.2"
+            value={state.distance}
+            onChange={(e) => { setState({ ...state, distance: e.target.value }); setWarning(''); }}
+            className={getFieldValidationClass('distance', state.distance)}
+          />
+          {!isValidNumber(state.distance) && <div className="invalid-feedback d-block">Please enter a valid distance greater than 0.</div>}
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Steps *</Form.Label>
+          <Form.Control
+            type="number"
+            min="1"
+            placeholder="e.g., 6000"
+            value={state.steps}
+            onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
+            className={getFieldValidationClass('steps', state.steps)}
+          />
+          {!isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Date</Form.Label>
           <DatePicker
             selected={state.date}
             onChange={(date) => setState({ ...state, date })}
             dateFormat="yyyy/MM/dd"
+            className="form-control"
           />
-        </Form.Group>
-        <div style={{ marginBottom: '20px' }}>
-          <IconButton color={state.exerciseType === 'Running' ? "primary" : "default"} onClick={() => { setState({ ...state, exerciseType: 'Running' }); setWarning(''); }}>
-            <DirectionsRunIcon fontSize="large" />
-          </IconButton>
-          <IconButton color={state.exerciseType === 'Cycling' ? "primary" : "default"} onClick={() => { setState({ ...state, exerciseType: 'Cycling' }); setWarning(''); }}>
-            <BikeIcon fontSize="large" />
-          </IconButton>
-          <IconButton color={state.exerciseType === 'Swimming' ? "primary" : "default"} onClick={() => { setState({ ...state, exerciseType: 'Swimming' }); setWarning(''); }}>
-            <PoolIcon fontSize="large" />
-          </IconButton>
-          <IconButton color={state.exerciseType === 'Gym' ? "primary" : "default"} onClick={() => { setState({ ...state, exerciseType: 'Gym' }); setWarning(''); }}>
-            <FitnessCenterIcon fontSize="large" />
-          </IconButton>
-          <IconButton color={state.exerciseType === 'Other' ? "primary" : "default"} onClick={() => { setState({ ...state, exerciseType: 'Other' }); setWarning(''); }}>
-            <OtherIcon fontSize="large" />
-          </IconButton>
         </div>
-        <Form.Group controlId="description" style={{ marginBottom: '20px' }}>
-          <Form.Label>Description:</Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            required
-            value={state.description}
-            onChange={(e) => { setState({ ...state, description: e.target.value }); setWarning(''); }}
-          />
-        </Form.Group>
-        <Form.Group controlId="duration" style={{ marginBottom: '20px' }}>
-          <Form.Label>Duration (in minutes):</Form.Label>
-          <Form.Control
-            type="number"
-            min="1"
-            required
-            value={state.duration}
-            onChange={(e) => { setState({ ...state, duration: e.target.value }); setWarning(''); }}
-          />
-        </Form.Group>
-        <Form.Group controlId="distance" style={{ marginBottom: '20px' }}>
-          <Form.Label>Distance (in km):</Form.Label>
-          <Form.Control
-            type="number"
-            min="1"
-            required
-            value={state.distance}
-            onChange={(e) => { setState({ ...state, distance: e.target.value }); setWarning(''); }}
-          />
-        </Form.Group>
-        <Form.Group controlId="steps" style={{ marginBottom: '40px' }}>
-          <Form.Label>Steps:</Form.Label>
-          <Form.Control
-            type="number"
-            min="1"
-            required
-            value={state.steps}
-            onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
-          />
-        </Form.Group>
-        <Button
-          variant="success"
-          type="submit"
-          disabled={!isFormValid}
-          style={{ opacity: isFormValid ? 1 : 0.65, cursor: isFormValid ? 'pointer' : 'not-allowed' }}
-        >
-          Save activity
-        </Button>
+
+        <div className="submit-button-container">
+          <Button
+            variant="success"
+            type="submit"
+            disabled={!isFormValid}
+            style={{ opacity: isFormValid ? 1 : 0.65, cursor: isFormValid ? 'pointer' : 'not-allowed' }}
+          >
+            Save Activity
+          </Button>
+        </div>
       </Form>
-      {warning && <p style={{ color: 'red', marginTop: '16px' }}>{warning}</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
+      {warning && <div className="warning-message">{warning}</div>}
+      {message && <div className="success-message">{message}</div>}
     </div>
   );
 };

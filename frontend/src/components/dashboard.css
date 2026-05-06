@@ -1,0 +1,56 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding: 20px 0;
+}
+
+.dashboard-summary-section {
+  width: 100%;
+}
+
+.dashboard-feed-section {
+  width: 100%;
+}
+
+.dashboard-action {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.btn-track-exercise {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+  font-weight: 600;
+  padding: 12px 32px;
+  font-size: 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-track-exercise:hover {
+  background-color: var(--accent-alt) !important;
+  border-color: var(--accent-alt) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(31, 114, 255, 0.3);
+}
+
+.btn-track-exercise:active {
+  transform: translateY(0);
+}
+
+[data-theme="high-contrast"] .btn-track-exercise {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+  font-weight: 700;
+  border: 2px solid var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .btn-track-exercise:hover {
+  background-color: var(--accent-highlight) !important;
+  border-color: var(--accent-highlight) !important;
+}

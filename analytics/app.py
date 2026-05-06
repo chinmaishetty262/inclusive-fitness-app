@@ -164,6 +164,57 @@ def weekly_user_stats():
         return jsonify(error="An internal error occurred"), 500
 
 
+@app.route('/stats/daily/<username>', methods=['GET'])
+def daily_user_stats(username):
+    # Get the last 7 days
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=7)
+
+    pipeline = [
+        {
+            "$match": {
+                "username": username,
+                "date": {
+                    "$gte": start_date,
+                    "$lt": end_date
+                }
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$dateToString": {
+                        "format": "%Y-%m-%d",
+                        "date": "$date"
+                    }
+                },
+                "totalDuration": {"$sum": "$duration"},
+                "totalDistance": {"$sum": {"$ifNull": ["$distance", 0]}},
+                "totalSteps": {"$sum": {"$ifNull": ["$steps", 0]}}
+            }
+        },
+        {
+            "$project": {
+                "date": "$_id",
+                "totalDuration": 1,
+                "totalDistance": 1,
+                "totalSteps": 1,
+                "_id": 0
+            }
+        },
+        {
+            "$sort": {"date": 1}
+        }
+    ]
+
+    try:
+        stats = list(db.exercises.aggregate(pipeline))
+        return jsonify(stats=stats)
+    except Exception as e:
+        logging.error(f"An error occurred while querying MongoDB: {e}")
+        traceback.print_exc()
+        return jsonify(error="An internal error occurred"), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5050)
