@@ -16,11 +16,16 @@ jobs:
     name: Run Semgrep Security Scan
     runs-on: ubuntu-latest
 
+    container:
+      image: returntocorp/semgrep
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Semgrep
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: p/security-audit
+      - name: Run Semgrep scan
+        run: |
+          semgrep --config=p/javascript .
+          semgrep --config=p/nodejs .
+          semgrep --config=p/java .
+          semgrep --config=p/python .
