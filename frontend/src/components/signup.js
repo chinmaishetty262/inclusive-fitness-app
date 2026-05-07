@@ -28,7 +28,7 @@ const Signup = ({ onSignup }) => {
         }
     } catch (error) {
         console.error('Error during registration', error);
-        setError(error.response?.data || 'An error occurred during registration. Please try again.');
+        setError(error.response?.data?.message || 'An error occurred during registration. Please try again.');
     }
   };
 
@@ -39,7 +39,7 @@ const Signup = ({ onSignup }) => {
 
       <Form onSubmit={handleSignup}>
         <Form.Group controlId="formBasicEmail">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter email"
