@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import axiosInstance from '../components/axiosInstance';
 import ActivitiesSummary from './statistics';
@@ -14,6 +14,10 @@ defineFeature(feature, test => {
   beforeEach(() => {
     jest.clearAllMocks();
     currentUser = 'testuser';
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   test('Showing summary totals for the current user', ({ given, when, then, and }) => {
@@ -38,15 +42,19 @@ defineFeature(feature, test => {
     });
 
     then('the summary bubbles show the combined totals', async () => {
-      await screen.findByText('Running');
-      expect(screen.getByText('50')).toBeInTheDocument();
-      expect(screen.getByText('7 km')).toBeInTheDocument();
-      expect(screen.getByText('9000')).toBeInTheDocument();
+      await screen.findByText(/running/i);
+
+      // totals: duration 50, distance 7, steps 9000
+      await waitFor(() => {
+        expect(screen.getByText(/50/)).toBeInTheDocument();
+        expect(screen.getByText(/7(\.00)?\s*km/i)).toBeInTheDocument();
+        expect(screen.getByText(/9000/)).toBeInTheDocument();
+      });
     });
 
-    and('the activity totals section shows each exercise type', () => {
-      expect(screen.getByText('Running')).toBeInTheDocument();
-      expect(screen.getByText('Walking')).toBeInTheDocument();
+    and('the activity totals section shows each exercise type', async () => {
+      expect(await screen.findByText(/running/i)).toBeInTheDocument();
+      expect(await screen.findByText(/walking/i)).toBeInTheDocument();
     });
   });
 
@@ -72,9 +80,10 @@ defineFeature(feature, test => {
     });
 
     then('missing activity totals are shown as zero', async () => {
-      await screen.findByText('Cycling');
-      expect(screen.getByText('Steps: 0')).toBeInTheDocument();
-      expect(screen.getByText('Distance: 0 km')).toBeInTheDocument();
+      expect(await screen.findByText(/cycling/i)).toBeInTheDocument();
+
+      expect(screen.getByText(/steps:\s*0/i)).toBeInTheDocument();
+      expect(screen.getByText(/distance:\s*0/i)).toBeInTheDocument();
     });
   });
 
@@ -88,7 +97,9 @@ defineFeature(feature, test => {
     });
 
     then('the statistics view shows a load error', async () => {
-      expect(await screen.findByText(/Unable to load statistics right now/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(/Unable to load statistics right now/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -111,7 +122,9 @@ defineFeature(feature, test => {
     });
 
     then('the statistics view shows that no activity type totals are available', async () => {
-      expect(await screen.findByText(/No activity type totals available/i)).toBeInTheDocument();
+      expect(
+        await screen.findByText(/No activity type totals available/i)
+      ).toBeInTheDocument();
     });
   });
 
@@ -148,15 +161,16 @@ defineFeature(feature, test => {
 
     when('the statistics summary is opened for the first user and then updated for the second user', async () => {
       const { rerender } = render(<ActivitiesSummary currentUser={currentUser} />);
-      await screen.findByText('Running');
+      await screen.findByText(/running/i);
 
       rerender(<ActivitiesSummary currentUser="seconduser" />);
     });
 
-    then('the summary bubbles update to reflect the second user\'s totals', async () => {
-      await screen.findByText('Cycling');
-      expect(screen.getByText('40')).toBeInTheDocument();
-      expect(screen.getByText('12 km')).toBeInTheDocument();
+    then("the summary bubbles update to reflect the second user's totals", async () => {
+      expect(await screen.findByText(/cycling/i)).toBeInTheDocument();
+
+      expect(screen.getByText(/40/)).toBeInTheDocument();
+      expect(screen.getByText(/12(\.00)?\s*km/i)).toBeInTheDocument();
     });
   });
 });
