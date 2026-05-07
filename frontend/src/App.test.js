@@ -1,8 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders Inclusive Fitness App title', () => {
-  render(<App />);
-  const linkElement = screen.getByText("Inclusive Fitness");
-  expect(linkElement).toBeInTheDocument();
+describe('App', () => {
+  test('renders Inclusive Fitness App title', async () => {
+    render(<App />);
+
+    const titleElement = await screen.findByText(/inclusive fitness/i);
+
+    expect(titleElement).toBeInTheDocument();
+  });
 });
