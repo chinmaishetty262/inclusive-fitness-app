@@ -20,7 +20,6 @@ public class JwtUtil {
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
-
     public String generateToken(String username) {
         
         return Jwts.builder()
@@ -33,18 +32,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    
-    public boolean validateToken(String token) {
-    try {
-        Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token);
-        return true;
-    } catch (JwtException e) {
-        return false;
-    }
-    }
 
     public String extractUsername(String token) {
     return Jwts.parserBuilder()

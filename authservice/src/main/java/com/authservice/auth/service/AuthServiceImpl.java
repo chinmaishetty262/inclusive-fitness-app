@@ -5,6 +5,8 @@ import com.authservice.auth.dto.LoginRequest;
 import com.authservice.auth.model.User;
 import com.authservice.auth.repository.UserRepository;
 import com.authservice.auth.config.JwtUtil;
+import com.authservice.auth.exception.UserAlreadyExistsException;
+import com.authservice.auth.exception.InvalidCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     public String register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         User user = new User();
@@ -46,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
             userRepository.findByEmail(request.getEmail());
 
     if (existingUser == null) {
-        throw new RuntimeException("User not found");
+        throw new InvalidCredentialsException("Invalid email or password");
     }
 
     boolean passwordMatches =
@@ -56,23 +58,11 @@ public class AuthServiceImpl implements AuthService {
             );
 
     if (!passwordMatches) {
-        throw new RuntimeException("Invalid credentials");
+         throw new InvalidCredentialsException("Invalid email or password");
     }
     
     return jwtUtil.generateToken(existingUser.getEmail());
     }
 
-    @Override
-    public String validateToken(String token) {
 
-    boolean isValid = jwtUtil.validateToken(token);
-
-    if (!isValid) {
-        throw new RuntimeException("Invalid or expired token");
-    }
-
-    String username = jwtUtil.extractUsername(token);
-
-    return "Token is valid for user: " + username;
-}
 }

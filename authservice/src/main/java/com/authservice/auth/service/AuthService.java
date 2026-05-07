@@ -5,7 +5,6 @@ import com.authservice.auth.dto.LoginRequest;
 public interface AuthService {
     String register(RegisterRequest request);
     String login(LoginRequest request);
-    String validateToken(String token);
     //AuthResponse refreshToken(RefreshTokenRequest request);
 
 }
