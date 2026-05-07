@@ -49,7 +49,7 @@ defineFeature(feature, test => {
       expect(await screen.findByText('Running')).toBeInTheDocument();
       expect(screen.getByText('Walking')).toBeInTheDocument();
       expect(screen.getByText('Duration: 30 min')).toBeInTheDocument();
-      expect(screen.getByText('Distance: 5 km')).toBeInTheDocument();
+      expect(screen.getByText('Distance: 5.00 km')).toBeInTheDocument();
       expect(screen.getByText('Steps: 6000')).toBeInTheDocument();
       expect(screen.getByText('Morning run')).toBeInTheDocument();
     });

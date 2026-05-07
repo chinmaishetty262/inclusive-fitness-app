@@ -23,11 +23,11 @@ export default function AccessibilityToggle() {
             display: "flex",
             alignItems: "center",
             gap: "10px",
-            background: highContrast ? "#1a1a1a" : "#ffffff",
-            border: highContrast ? "2px solid #ffffff" : "2px solid #ccc",
+            background: highContrast ? "var(--bg-secondary)" : "var(--bg)",
+            border: highContrast ? "2px solid var(--border)" : "2px solid rgba(0,0,0,0.12)",
             borderRadius: "999px",
             padding: "8px 16px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            boxShadow: "0 2px 8px rgba(18, 33, 60, 0.12)",
             cursor: "pointer",
         }}
             onClick={() => setHighContrast(prev => !prev)}
@@ -40,7 +40,7 @@ export default function AccessibilityToggle() {
                 width: "44px",
                 height: "24px",
                 borderRadius: "999px",
-                background: highContrast ? "#ffff00" : "#ccc",
+                background: highContrast ? "var(--accent)" : "rgba(0,0,0,0.15)",
                 position: "relative",
                 transition: "background 0.2s",
                 flexShrink: 0,
@@ -53,8 +53,8 @@ export default function AccessibilityToggle() {
                     width: "18px",
                     height: "18px",
                     borderRadius: "50%",
-                    background: highContrast ? "#000000" : "#ffffff",
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                    background: highContrast ? "var(--bg)" : "var(--bg-secondary)",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
                     transition: "left 0.2s",
                 }} />
             </div>
@@ -62,7 +62,7 @@ export default function AccessibilityToggle() {
             <span style={{
                 fontSize: "13px",
                 fontWeight: "600",
-                color: highContrast ? "#ffffff" : "#333333",
+                color: "var(--text)",
                 whiteSpace: "nowrap",
             }}>
                 High contrast

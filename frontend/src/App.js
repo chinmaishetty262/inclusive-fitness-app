@@ -7,12 +7,14 @@ import NavbarComponent from './components/navbar';
 import TrackExercise from './components/trackExercise';
 import ActivitiesSummary from './components/statistics';
 import ActivityFeed from './components/activityFeed';
+import Dashboard from './components/dashboard';
 import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal';
-import logo from './img/CFG_logo.png';
+import logo from './img/InclusiveFitness.png';
 import AccessibilityToggle from './components/AccessibilityToggle';
+
 
 
 function App() {
@@ -34,7 +36,8 @@ function App() {
       <AccessibilityToggle />
       <Router>
         <div className="appTitle">
-          <h1>MLA Fitness App</h1>
+          <h1>Inclusive Fitness</h1>
+          <img src={logo} alt="Inclusive Fitness App Logo" id="appLogo" />
         </div>
 
         {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
@@ -46,11 +49,10 @@ function App() {
               setIsLoggedIn(true);
               setCurrentUser(username);
             }} />} />
+            <Route path="/" element={isLoggedIn ? <Dashboard currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/statistics" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/myfeed" element={isLoggedIn ? <ActivityFeed currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
             <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
-            <Route path="/" element={isLoggedIn ? <Navigate to="/trackExercise" /> : <Navigate to="/login" />} />
           </Routes>
         </div>
         <Footer />

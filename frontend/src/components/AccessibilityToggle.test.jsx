@@ -1,37 +1,80 @@
-// src/components/AccessibilityToggle.test.jsx
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import AccessibilityToggle from "./AccessibilityToggle";
 
 // Mock localStorage
 const localStorageMock = (() => {
     let store = {};
+
     return {
-        getItem: (key) => store[key] || null,
-        setItem: (key, value) => { store[key] = value.toString(); },
-        clear: () => { store = {}; },
+        getItem: jest.fn((key) => store[key] || null),
+
+        setItem: jest.fn((key, value) => {
+            store[key] = value.toString();
+        }),
+
+        clear: jest.fn(() => {
+            store = {};
+        }),
     };
 })();
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+
+Object.defineProperty(window, "localStorage", {
+    value: localStorageMock,
+    writable: true,
+});
 
 describe("AccessibilityToggle", () => {
-    beforeEach(() => localStorageMock.clear());
+    beforeEach(() => {
+        localStorageMock.clear();
+        jest.clearAllMocks();
 
-    test("renders with correct label in standard mode", () => {
-        render(<AccessibilityToggle />);
-        expect(screen.getByRole("button", { name: /high contrast/i })).toBeInTheDocument();
+        document.documentElement.removeAttribute("data-theme");
     });
 
-    test("toggles to high contrast when clicked", () => {
+    test("renders with correct label in standard mode", async () => {
         render(<AccessibilityToggle />);
-        const btn = screen.getByRole("button");
+
+        const button = await screen.findByRole("button", {
+            name: /high contrast/i,
+        });
+
+        expect(button).toBeInTheDocument();
+        expect(button).toHaveAttribute("aria-pressed", "false");
+    });
+
+    test("toggles to high contrast when clicked", async () => {
+        render(<AccessibilityToggle />);
+
+        const btn = await screen.findByRole("button", {
+            name: /high contrast/i,
+        });
+
         fireEvent.click(btn);
-        expect(document.documentElement.getAttribute("data-theme")).toBe("high-contrast");
+
+        await waitFor(() => {
+            expect(document.documentElement.getAttribute("data-theme"))
+                .toBe("high-contrast");
+        });
+
         expect(btn).toHaveAttribute("aria-pressed", "true");
     });
 
-    test("saves preference to localStorage", () => {
-        render(<AccessibilityToggle />);
-        fireEvent.click(screen.getByRole("button"));
-        expect(localStorageMock.getItem("highContrast")).toBe("true");
+test("saves preference to localStorage", async () => {
+    render(<AccessibilityToggle />);
+
+    const btn = await screen.findByRole("button", {
+        name: /high contrast/i,
     });
+
+    fireEvent.click(btn);
+
+    await waitFor(() => {
+        expect(localStorageMock.setItem).toHaveBeenCalled();
+    });
+
+    expect(localStorageMock.setItem).toHaveBeenLastCalledWith(
+        "highContrast",
+        true
+    );
+});
 });
