@@ -95,25 +95,23 @@ const ActivitiesSummary = ({ currentUser, showSummaryOnly = false, hideSummaryTi
         <div className="stats-loading">Loading statistics...</div>
       ) : (
         <>
-          {showSummaryOnly && (
-            <div className="section-summary section-panel">
-              {!hideSummaryTitle && <h4>Activities Summary</h4>}
-              <div className="summary-bubbles">
-                <div className="summary-bubble bubble-active">
-                  <div className="bubble-label">Active Minutes</div>
-                  <div className="bubble-value">{totalActiveMinutes}</div>
-                </div>
-                <div className="summary-bubble bubble-distance">
-                  <div className="bubble-label">Distance</div>
-                  <div className="bubble-value">{totalDistance.toFixed(2)} km</div>
-                </div>
-                <div className="summary-bubble bubble-steps">
-                  <div className="bubble-label">Steps</div>
-                  <div className="bubble-value">{totalSteps}</div>
-                </div>
+          <div className="section-summary section-panel">
+            {!hideSummaryTitle && <h4>Activities Summary</h4>}
+            <div className="summary-bubbles">
+              <div className="summary-bubble bubble-active">
+                <div className="bubble-label">Active Minutes</div>
+                <div className="bubble-value">{totalActiveMinutes}</div>
+              </div>
+              <div className="summary-bubble bubble-distance">
+                <div className="bubble-label">Distance</div>
+                <div className="bubble-value">{totalDistance.toFixed(2)} km</div>
+              </div>
+              <div className="summary-bubble bubble-steps">
+                <div className="bubble-label">Steps</div>
+                <div className="bubble-value">{totalSteps}</div>
               </div>
             </div>
-          )}
+          </div>
 
           {!showSummaryOnly && (
             <>

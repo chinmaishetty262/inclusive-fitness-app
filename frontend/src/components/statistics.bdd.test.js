@@ -1,10 +1,15 @@
+jest.mock('../components/axiosInstance', () => ({
+  __esModule: true,
+  default: {
+    get: jest.fn()
+  }
+}));
+
 import React from 'react';
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import axiosInstance from '../components/axiosInstance';
 import ActivitiesSummary from './statistics';
-
-jest.mock('../components/axiosInstance');
 
 const feature = loadFeature('./src/components/features/statistics.feature');
 
@@ -22,19 +27,21 @@ defineFeature(feature, test => {
 
   test('Showing summary totals for the current user', ({ given, when, then, and }) => {
     given('the statistics service returns totals for the current user', () => {
-      axiosInstance.get.mockResolvedValueOnce({
-        data: {
-          stats: [
-            {
-              username: 'testuser',
-              exercises: [
-                { exerciseType: 'Running', totalDuration: 30, totalDistance: 5, totalSteps: 6000 },
-                { exerciseType: 'Walking', totalDuration: 20, totalDistance: 2, totalSteps: 3000 }
-              ]
-            }
-          ]
-        }
-      });
+      axiosInstance.get
+        .mockResolvedValueOnce({
+          data: {
+            stats: [
+              {
+                username: 'testuser',
+                exercises: [
+                  { exerciseType: 'Running', totalDuration: 30, totalDistance: 5, totalSteps: 6000 },
+                  { exerciseType: 'Walking', totalDuration: 20, totalDistance: 2, totalSteps: 3000 }
+                ]
+              }
+            ]
+          }
+        })
+        .mockResolvedValueOnce({ data: { stats: [] } });
     });
 
     when('the statistics summary is opened for that user', () => {
@@ -44,7 +51,6 @@ defineFeature(feature, test => {
     then('the summary bubbles show the combined totals', async () => {
       await screen.findByText(/running/i);
 
-      // totals: duration 50, distance 7, steps 9000
       await waitFor(() => {
         expect(screen.getByText(/50/)).toBeInTheDocument();
         expect(screen.getByText(/7(\.00)?\s*km/i)).toBeInTheDocument();
@@ -60,19 +66,21 @@ defineFeature(feature, test => {
 
   test('Showing fallback totals for missing values', ({ given, when, then }) => {
     given('the statistics service returns activity totals with missing distance or steps values', () => {
-      axiosInstance.get.mockResolvedValueOnce({
-        data: {
-          stats: [
-            {
-              username: 'testuser',
-              exercises: [
-                { exerciseType: 'Cycling', totalDuration: 45, totalDistance: 12 },
-                { exerciseType: 'Other', totalDuration: 10, totalSteps: 800 }
-              ]
-            }
-          ]
-        }
-      });
+      axiosInstance.get
+        .mockResolvedValueOnce({
+          data: {
+            stats: [
+              {
+                username: 'testuser',
+                exercises: [
+                  { exerciseType: 'Cycling', totalDuration: 45, totalDistance: 12 },
+                  { exerciseType: 'Other', totalDuration: 10, totalSteps: 800 }
+                ]
+              }
+            ]
+          }
+        })
+        .mockResolvedValueOnce({ data: { stats: [] } });
     });
 
     when('the statistics summary is opened for that user', () => {
@@ -89,7 +97,9 @@ defineFeature(feature, test => {
 
   test('Showing an error when statistics cannot be loaded', ({ given, when, then }) => {
     given('the statistics service request fails', () => {
-      axiosInstance.get.mockRejectedValueOnce(new Error('Network error'));
+      axiosInstance.get
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({ data: { stats: [] } });
     });
 
     when('the statistics summary is opened for that user', () => {
@@ -105,16 +115,18 @@ defineFeature(feature, test => {
 
   test('Showing no activity totals when none exist', ({ given, when, then }) => {
     given('the statistics service returns no exercise totals for the current user', () => {
-      axiosInstance.get.mockResolvedValueOnce({
-        data: {
-          stats: [
-            {
-              username: 'testuser',
-              exercises: []
-            }
-          ]
-        }
-      });
+      axiosInstance.get
+        .mockResolvedValueOnce({
+          data: {
+            stats: [
+              {
+                username: 'testuser',
+                exercises: []
+              }
+            ]
+          }
+        })
+        .mockResolvedValueOnce({ data: { stats: [] } });
     });
 
     when('the statistics summary is opened for that user', () => {
@@ -169,8 +181,8 @@ defineFeature(feature, test => {
     then("the summary bubbles update to reflect the second user's totals", async () => {
       expect(await screen.findByText(/cycling/i)).toBeInTheDocument();
 
-      expect(screen.getByText(/40/)).toBeInTheDocument();
-      expect(screen.getByText(/12(\.00)?\s*km/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/40/).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(/12(\.00)?\s*km/i).length).toBeGreaterThan(0);
     });
   });
 });
