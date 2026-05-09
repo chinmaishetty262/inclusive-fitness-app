@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -15,6 +15,8 @@ import Signup from './components/signup';
 import Journal from './components/journal';
 import logo from './img/InclusiveFitness.png';
 import AccessibilityToggle from './components/AccessibilityToggle';
+
+const GoalSetting = React.lazy(() => import('./components/goalSetting'));
 
 
 
@@ -70,6 +72,18 @@ function App() {
             <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
             <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
             <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
+            <Route
+              path="/goals"
+              element={
+                isLoggedIn ? (
+                  <Suspense fallback={<div>Loading goals...</div>}>
+                    <GoalSetting currentUser={currentUser} />
+                  </Suspense>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
           </Routes>
         </div>
         <Footer />
