@@ -30,6 +30,9 @@ connection.on('error', (error) => {
 const exercisesRouter = require('./routes/exercises');
 app.use('/exercises', exercisesRouter);
 
+const goalsRouter = require('./routes/goals');
+app.use('/goals', goalsRouter);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -41,4 +44,4 @@ app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
 
-module.exports = app;  
+module.exports = app;
