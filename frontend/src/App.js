@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { useState } from 'react';
+import { Modal, Button } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -22,16 +23,32 @@ const GoalSetting = React.lazy(() => import('./components/goalSetting'));
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
-
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const handleLogout = () => {
+  setShowLogoutModal(true);
+ };
+
+  const confirmLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+
     setIsLoggedIn(false);
     setCurrentUser('');
+
+    setShowLogoutModal(false);
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
 
   const handleLogin = (username) => {
     setIsLoggedIn(true);
     setCurrentUser(username);
   };
+
+  
 
   return (
     <div className="App">
@@ -70,6 +87,46 @@ function App() {
           </Routes>
         </div>
         <Footer />
+        
+
+          <Modal
+  show={showLogoutModal}
+  onHide={cancelLogout}
+  centered
+>
+
+  <Modal.Header closeButton>
+    <Modal.Title className="w-100 text-center">
+      Confirm Logout
+    </Modal.Title>
+  </Modal.Header>
+
+  <Modal.Body className="text-center">
+    Do you really wish to leave?
+  </Modal.Body>
+
+  <Modal.Footer className="justify-content-center border-0">
+
+    <Button
+  variant="primary"
+  className="rounded-pill px-4 py-2"
+  onClick={cancelLogout}
+>
+  Cancel
+</Button>
+
+    <Button
+  variant="danger"
+  className="rounded-pill px-4 py-2"
+  onClick={confirmLogout}
+>
+  Logout
+</Button>
+
+  </Modal.Footer>
+
+</Modal>
+
       </Router>
     </div>
   );

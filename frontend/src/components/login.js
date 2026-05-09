@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+
 import { Button, Form, Alert } from 'react-bootstrap';
 import axiosInstance from './axiosInstance';
 import { Link } from 'react-router-dom';
@@ -8,6 +9,14 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  useEffect(() => {
+  const authError = localStorage.getItem("authError");
+
+  if (authError) {
+    setError(authError);
+    localStorage.removeItem("authError");
+  }
+}, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -27,16 +36,19 @@ const Login = ({ onLogin }) => {
 
         localStorage.setItem("token", token);
         localStorage.setItem("email", email);
-
+        const token1 = localStorage.getItem("token");
+        const payload = JSON.parse(atob(token1.split('.')[1]));
+        console.log(payload);
         onLogin(email);
 
       }
 
     } catch(err){
-   console.log(err.response.data);
+   console.log(err.response.data.message);
    setError(err.response?.data?.message || "Login failed");
 }
   };
+  
 
   return (
     <div className="login-container">
