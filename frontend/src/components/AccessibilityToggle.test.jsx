@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import AccessibilityToggle from "./AccessibilityToggle";
 
 // Mock localStorage
@@ -32,7 +32,9 @@ describe("AccessibilityToggle", () => {
     });
 
     test("renders with correct label in standard mode", async () => {
-        render(<AccessibilityToggle />);
+        await act(async () => {
+            render(<AccessibilityToggle />);
+        });
 
         const button = await screen.findByRole("button", {
             name: /high contrast/i,
@@ -43,13 +45,17 @@ describe("AccessibilityToggle", () => {
     });
 
     test("toggles to high contrast when clicked", async () => {
-        render(<AccessibilityToggle />);
+        await act(async () => {
+            render(<AccessibilityToggle />);
+        });
 
         const btn = await screen.findByRole("button", {
             name: /high contrast/i,
         });
 
-        fireEvent.click(btn);
+        await act(async () => {
+            fireEvent.click(btn);
+        });
 
         await waitFor(() => {
             expect(document.documentElement.getAttribute("data-theme"))
@@ -59,22 +65,26 @@ describe("AccessibilityToggle", () => {
         expect(btn).toHaveAttribute("aria-pressed", "true");
     });
 
-test("saves preference to localStorage", async () => {
-    render(<AccessibilityToggle />);
+    test("saves preference to localStorage", async () => {
+        await act(async () => {
+            render(<AccessibilityToggle />);
+        });
 
-    const btn = await screen.findByRole("button", {
-        name: /high contrast/i,
+        const btn = await screen.findByRole("button", {
+            name: /high contrast/i,
+        });
+
+        await act(async () => {
+            fireEvent.click(btn);
+        });
+
+        await waitFor(() => {
+            expect(localStorageMock.setItem).toHaveBeenCalled();
+        });
+
+        expect(localStorageMock.setItem).toHaveBeenLastCalledWith(
+            "highContrast",
+            true
+        );
     });
-
-    fireEvent.click(btn);
-
-    await waitFor(() => {
-        expect(localStorageMock.setItem).toHaveBeenCalled();
-    });
-
-    expect(localStorageMock.setItem).toHaveBeenLastCalledWith(
-        "highContrast",
-        true
-    );
-});
 });
