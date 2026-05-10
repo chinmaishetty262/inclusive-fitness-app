@@ -32,39 +32,39 @@ describe("AccessibilityToggle", () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const button = await screen.findByRole("button", {
-            name: /high contrast/i,
+        const toggle = await screen.findByRole("switch", {
+            name: /switch to high contrast/i,
         });
-        expect(button).toBeInTheDocument();
-        expect(button).toHaveAttribute("aria-pressed", "false");
+        expect(toggle).toBeInTheDocument();
+        expect(toggle).toHaveAttribute("aria-checked", "false");
     });
 
     test("toggles to high contrast when clicked", async () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const btn = await screen.findByRole("button", {
-            name: /high contrast/i,
+        const toggle = await screen.findByRole("switch", {
+            name: /switch to high contrast/i,
         });
         await act(async () => {
-            fireEvent.click(btn);
+            fireEvent.click(toggle);
         });
         await waitFor(() => {
             expect(document.documentElement.getAttribute("data-theme"))
                 .toBe("high-contrast");
         });
-        expect(btn).toHaveAttribute("aria-pressed", "true");
+        expect(toggle).toHaveAttribute("aria-checked", "true");
     });
 
     test("saves preference to localStorage", async () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const btn = await screen.findByRole("button", {
-            name: /high contrast/i,
+        const toggle = await screen.findByRole("switch", {
+            name: /switch to high contrast/i,
         });
         await act(async () => {
-            fireEvent.click(btn);
+            fireEvent.click(toggle);
         });
         await waitFor(() => {
             expect(localStorageMock.setItem).toHaveBeenCalled();
