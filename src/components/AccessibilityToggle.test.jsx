@@ -5,11 +5,14 @@ import AccessibilityToggle from "./AccessibilityToggle";
 // Mock localStorage
 const localStorageMock = (() => {
     let store = {};
+
     return {
         getItem: jest.fn((key) => store[key] || null),
+
         setItem: jest.fn((key, value) => {
             store[key] = value.toString();
         }),
+
         clear: jest.fn(() => {
             store = {};
         }),
@@ -25,6 +28,7 @@ describe("AccessibilityToggle", () => {
     beforeEach(() => {
         localStorageMock.clear();
         jest.clearAllMocks();
+
         document.documentElement.removeAttribute("data-theme");
     });
 
@@ -32,43 +36,53 @@ describe("AccessibilityToggle", () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const toggle = await screen.findByRole("switch", {
-            name: /switch to high contrast/i,
+
+        const button = await screen.findByRole("button", {
+            name: /high contrast/i,
         });
-        expect(toggle).toBeInTheDocument();
-        expect(toggle).toHaveAttribute("aria-checked", "false");
+
+        expect(button).toBeInTheDocument();
+        expect(button).toHaveAttribute("aria-pressed", "false");
     });
 
     test("toggles to high contrast when clicked", async () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const toggle = await screen.findByRole("switch", {
-            name: /switch to high contrast/i,
+
+        const btn = await screen.findByRole("button", {
+            name: /high contrast/i,
         });
+
         await act(async () => {
-            fireEvent.click(toggle);
+            fireEvent.click(btn);
         });
+
         await waitFor(() => {
             expect(document.documentElement.getAttribute("data-theme"))
                 .toBe("high-contrast");
         });
-        expect(toggle).toHaveAttribute("aria-checked", "true");
+
+        expect(btn).toHaveAttribute("aria-pressed", "true");
     });
 
     test("saves preference to localStorage", async () => {
         await act(async () => {
             render(<AccessibilityToggle />);
         });
-        const toggle = await screen.findByRole("switch", {
-            name: /switch to high contrast/i,
+
+        const btn = await screen.findByRole("button", {
+            name: /high contrast/i,
         });
+
         await act(async () => {
-            fireEvent.click(toggle);
+            fireEvent.click(btn);
         });
+
         await waitFor(() => {
             expect(localStorageMock.setItem).toHaveBeenCalled();
         });
+
         expect(localStorageMock.setItem).toHaveBeenLastCalledWith(
             "highContrast",
             true
