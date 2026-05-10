@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { defineFeature, loadFeature } from 'jest-cucumber';
 import axiosInstance from '../components/axiosInstance';
@@ -41,8 +41,10 @@ defineFeature(feature, test => {
       });
     });
 
-    when('the activity feed is opened for that user', () => {
-      render(<ActivityFeed currentUser={currentUser} />);
+    when('the activity feed is opened for that user', async () => {
+      await act(async () => {
+        render(<ActivityFeed currentUser={currentUser} />);
+      });
     });
 
     then('the feed lists the user\'s activity details', async () => {
@@ -60,8 +62,10 @@ defineFeature(feature, test => {
       axiosInstance.get.mockRejectedValueOnce(new Error('Network error'));
     });
 
-    when('the activity feed is opened for that user', () => {
-      render(<ActivityFeed currentUser={currentUser} />);
+    when('the activity feed is opened for that user', async () => {
+      await act(async () => {
+        render(<ActivityFeed currentUser={currentUser} />);
+      });
     });
 
     then('the feed shows an activity load error', async () => {
@@ -74,8 +78,10 @@ defineFeature(feature, test => {
       axiosInstance.get.mockResolvedValueOnce({ data: [] });
     });
 
-    when('the activity feed is opened for that user', () => {
-      render(<ActivityFeed currentUser={currentUser} />);
+    when('the activity feed is opened for that user', async () => {
+      await act(async () => {
+        render(<ActivityFeed currentUser={currentUser} />);
+      });
     });
 
     then('the feed shows that no recent activities are available', async () => {
