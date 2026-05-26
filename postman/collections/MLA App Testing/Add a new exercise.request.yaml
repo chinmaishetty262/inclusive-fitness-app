@@ -1,0 +1,46 @@
+$kind: http-request
+name: Add a new exercise
+url: http://localhost:5300/exercises/add
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"testuser\",\r
+
+    \  \"exerciseType\": \"Running\",\r
+
+    \  \"description\": \"Morning run\",\r
+
+    \  \"duration\": 30,\r
+
+    \  \"date\": \"2024-01-15\",\r
+
+    \  \"steps\": 5000,\r
+
+    \  \"distance\": 3\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });\r
+
+      \r
+
+      pm.collectionVariables.set(\"exerciseId\", null);"
+    language: text/javascript
+settings:
+  followRedirects: false
+order: 554322158972

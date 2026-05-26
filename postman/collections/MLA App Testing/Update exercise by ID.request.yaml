@@ -1,0 +1,36 @@
+$kind: http-request
+name: Update exercise by ID
+url: http://localhost:5300/exercises/update/{{exerciseId}}
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"username\": \"testuser\",\r
+
+    \  \"exerciseType\": \"Gym\",\r
+
+    \  \"description\": \"Updated run\",\r
+
+    \  \"duration\": 45,\r
+
+    \  \"date\": \"2024-01-15\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "pm.test(\"Status code is 200\", function () {\r
+
+      \    pm.response.to.have.status(200);\r
+
+      });\r
+
+      \r
+
+      pm.test(\"Response is JSON\", function () {\r
+
+      \    pm.response.to.be.json;\r
+
+      });"
+    language: text/javascript
+order: 4283332169221209
