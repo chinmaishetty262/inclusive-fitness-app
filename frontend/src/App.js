@@ -17,12 +17,15 @@ import logo from './img/InclusiveFitness.png';
 import AccessibilityToggle from './components/AccessibilityToggle';
 import initGlobalErrorHandling from './errorHandler';
 import ErrorBoundary from './ErrorBoundary';
+import Onboarding from './components/Onboarding';
+
 
 initGlobalErrorHandling();
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -46,6 +49,9 @@ function App() {
   const handleLogin = (username) => {
     setIsLoggedIn(true);
     setCurrentUser(username);
+    if (!localStorage.getItem('userProfile')) {
+      setShowOnboarding(true);
+    }
   };
 
 
@@ -63,6 +69,9 @@ function App() {
           {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
 
           <main className="componentContainer">
+            {showOnboarding && (
+              <Onboarding onComplete={() => setShowOnboarding(false)} />
+            )}
             <Routes>
               <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
               <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={(username) => {
