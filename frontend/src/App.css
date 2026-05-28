@@ -372,7 +372,7 @@ input#duration {
 }
 
 /* High contrast styles for buttons and interactive elements */
-[data-theme="high-contrast"] button {
+[data-theme="high-contrast"] button:not(.MuiIconButton-root) {
   background: var(--accent) !important;
   color: var(--accent-text) !important;
   border: 2px solid var(--accent) !important;
@@ -426,6 +426,14 @@ input#duration {
   color: var(--bg) !important;
   font-weight: 550 !important;
 
+}
+
+[data-theme="high-contrast"] .modal-header .btn-close,
+[data-theme="high-contrast"] button.btn-close {
+  background-color: var(--accent) !important;
+  /* do NOT set background-image here */
+  opacity: 1 !important;
+  border-radius: 4px !important;
 }
 
 [data-theme="high-contrast"] .form-control::placeholder {
@@ -581,7 +589,29 @@ input#duration {
   font-weight: 500;
 }
 
-/* SELECTED icons */
-[data-theme="high-contrast"] .MuiIconButton-root.MuiIconButton-colorPrimary .MuiSvgIcon-root {
-  color: var(--accent) !important;
+/* Unselected icon buttons in high contrast */
+[data-theme="high-contrast"] .MuiIconButton-root {
+  background-color: var(--accent) !important;
+  /* border: 2px solid var(--accent) !important; */
+}
+
+/* Keep the icon itself dark/visible against yellow */
+[data-theme="high-contrast"] .MuiIconButton-root .MuiSvgIcon-root {
+  color: var(--accent-text) !important;
+}
+
+/* Selected state — yellow ring, keep yellow bg */
+[data-theme="high-contrast"] .MuiIconButton-root.MuiIconButton-colorPrimary {
+  border: 3px solid var(--accent-text) !important;
+  background-color: rgb(255, 255, 255) !important;
+}
+
+[data-theme="high-contrast"] button.btn-close {
+  background-color: var(--accent) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 12px !important;
+  opacity: 1 !important;
+  border-radius: 4px !important;
 }
