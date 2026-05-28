@@ -62,7 +62,7 @@ function App() {
 
           {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
 
-          <div className="componentContainer">
+          <main className="componentContainer">
             <Routes>
               <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
               <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={(username) => {
@@ -74,7 +74,7 @@ function App() {
               <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
               <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
             </Routes>
-          </div>
+          </main>
           <Footer />
 
 

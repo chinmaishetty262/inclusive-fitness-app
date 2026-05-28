@@ -27,22 +27,22 @@ const TrackExercise = ({ currentUser }) => {
   const [saved, setSaved] = useState(false);
 
   const isValidNumber = (value) => Number(value) > 0;
-  
+
   const isFormValid = () => {
     if (!state.exerciseType || state.description.trim() === '' || !isValidNumber(state.duration)) {
       return false;
     }
-    
+
     // Swimming doesn't require steps
     if (state.exerciseType === 'Swimming') {
       return isValidNumber(state.distance);
     }
-    
+
     // Gym doesn't require distance
     if (state.exerciseType === 'Gym') {
       return isValidNumber(state.steps);
     }
-    
+
     // Other exercise types require both distance and steps
     return isValidNumber(state.distance) && isValidNumber(state.steps);
   };
@@ -126,10 +126,12 @@ const TrackExercise = ({ currentUser }) => {
     <div className="track-form-container">
       <h3>Track Your Activity</h3>
       <Form onSubmit={onSubmit}>
-        <div className="form-field-group">
-          <Form.Label>Activity Type *</Form.Label>
+        <fieldset className="form-field-group">
+          <legend className="form-label">Activity Type *</legend>
           <div className="exercise-type-selection">
             <IconButton
+              aria-label="Select Running as activity type"
+              aria-pressed={state.exerciseType === 'Running'}
               color={state.exerciseType === 'Running' ? "primary" : "default"}
               className={state.exerciseType === 'Running' ? 'selected' : ''}
               onClick={() => { setState({ ...state, exerciseType: 'Running' }); setWarning(''); }}
@@ -138,6 +140,8 @@ const TrackExercise = ({ currentUser }) => {
               <DirectionsRunIcon fontSize="large" />
             </IconButton>
             <IconButton
+              aria-label="Select Cycling as activity type"
+              aria-pressed={state.exerciseType === 'Cycling'}
               color={state.exerciseType === 'Cycling' ? "primary" : "default"}
               className={state.exerciseType === 'Cycling' ? 'selected' : ''}
               onClick={() => { setState({ ...state, exerciseType: 'Cycling' }); setWarning(''); }}
@@ -146,6 +150,8 @@ const TrackExercise = ({ currentUser }) => {
               <BikeIcon fontSize="large" />
             </IconButton>
             <IconButton
+              aria-label="Select Swimming as activity type"
+              aria-pressed={state.exerciseType === 'Swimming'}
               color={state.exerciseType === 'Swimming' ? "primary" : "default"}
               className={state.exerciseType === 'Swimming' ? 'selected' : ''}
               onClick={() => { setState({ ...state, exerciseType: 'Swimming' }); setWarning(''); }}
@@ -154,6 +160,8 @@ const TrackExercise = ({ currentUser }) => {
               <PoolIcon fontSize="large" />
             </IconButton>
             <IconButton
+              aria-label="Select Gym as activity type"
+              aria-pressed={state.exerciseType === 'Gym'}
               color={state.exerciseType === 'Gym' ? "primary" : "default"}
               className={state.exerciseType === 'Gym' ? 'selected' : ''}
               onClick={() => { setState({ ...state, exerciseType: 'Gym' }); setWarning(''); }}
@@ -162,6 +170,8 @@ const TrackExercise = ({ currentUser }) => {
               <FitnessCenterIcon fontSize="large" />
             </IconButton>
             <IconButton
+              aria-label="Select Other as activity type"
+              aria-pressed={state.exerciseType === 'Other'}
               color={state.exerciseType === 'Other' ? "primary" : "default"}
               className={state.exerciseType === 'Other' ? 'selected' : ''}
               onClick={() => { setState({ ...state, exerciseType: 'Other' }); setWarning(''); }}
@@ -171,11 +181,15 @@ const TrackExercise = ({ currentUser }) => {
             </IconButton>
           </div>
           {!state.exerciseType && <div className="invalid-feedback d-block">Please select an activity type.</div>}
-        </div>
+        </fieldset>
+
 
         <div className="form-field-group">
           <Form.Label>Description *</Form.Label>
           <Form.Control
+            id="description"
+            aria-label="Activity description"
+            aria-required="true"
             as="textarea"
             rows={3}
             placeholder="Describe your activity (e.g., 'Morning run in the park')"
@@ -189,6 +203,9 @@ const TrackExercise = ({ currentUser }) => {
         <div className="form-field-group">
           <Form.Label>Duration (minutes) *</Form.Label>
           <Form.Control
+            id="duration"
+            aria-label="Duration in minutes"
+            aria-required="true"
             type="number"
             min="1"
             placeholder="e.g., 30"
@@ -204,6 +221,8 @@ const TrackExercise = ({ currentUser }) => {
           <div className="form-field-group">
             <Form.Label>Distance (km) {state.exerciseType !== 'Gym' ? '*' : ''}</Form.Label>
             <Form.Control
+              id="distance"
+              aria-label="Distance in kilometres"
               type="number"
               min="0.01"
               step="any"
@@ -221,6 +240,8 @@ const TrackExercise = ({ currentUser }) => {
           <div className="form-field-group">
             <Form.Label>Steps {state.exerciseType !== 'Swimming' ? '*' : ''}</Form.Label>
             <Form.Control
+              id="steps"
+              aria-label="Number of steps"
               type="number"
               min="1"
               placeholder="e.g., 6000"
@@ -256,7 +277,7 @@ const TrackExercise = ({ currentUser }) => {
       </Form>
       {warning && <div className="warning-message">{warning}</div>}
       {message && <div className="success-message">{message}</div>}
-    </div>
+    </div >
   );
 };
 
