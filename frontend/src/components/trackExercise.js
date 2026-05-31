@@ -25,6 +25,7 @@ const TrackExercise = ({ currentUser }) => {
   const [message, setMessage] = useState('');
   const [warning, setWarning] = useState('');
   const [saved, setSaved] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const isValidNumber = (value) => Number(value) > 0;
 
@@ -48,6 +49,7 @@ const TrackExercise = ({ currentUser }) => {
   };
 
   const getFieldValidationClass = (fieldName, value) => {
+    if (!submitted) return '';
     if (value === '' || (fieldName === 'description' && value.trim() === '')) {
       return 'is-invalid';
     }
@@ -66,6 +68,7 @@ const TrackExercise = ({ currentUser }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setSubmitted(true);
 
     if (!isFormValid()) {
       setWarning('Please select an exercise type and fill in all required fields before saving.');
@@ -111,7 +114,7 @@ const TrackExercise = ({ currentUser }) => {
         <h3>Activity Saved!</h3>
         <p>Your activity has been saved successfully.</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px' }}>
-          <Button variant="secondary" onClick={() => setSaved(false)}>
+          <Button variant="secondary" onClick={() => { setSaved(false); setSubmitted(false); }}>
             Add another activity
           </Button>
           <Button variant="primary" onClick={() => navigate('/fitness')}>
@@ -180,7 +183,7 @@ const TrackExercise = ({ currentUser }) => {
               <OtherIcon fontSize="large" />
             </IconButton>
           </div>
-          {!state.exerciseType && <div className="invalid-feedback d-block">Please select an activity type.</div>}
+          {submitted && !state.exerciseType && <div className="invalid-feedback d-block">Please select an activity type.</div>}
         </fieldset>
 
 
@@ -197,7 +200,7 @@ const TrackExercise = ({ currentUser }) => {
             onChange={(e) => { setState({ ...state, description: e.target.value }); setWarning(''); }}
             className={getFieldValidationClass('description', state.description)}
           />
-          {state.description.trim() === '' && <div className="invalid-feedback d-block">Please provide a description of your activity.</div>}
+          {submitted && state.description.trim() === '' && <div className="invalid-feedback d-block">Please provide a description of your activity.</div>}
         </div>
 
         <div className="form-field-group">
@@ -214,7 +217,7 @@ const TrackExercise = ({ currentUser }) => {
             onChange={(e) => { setState({ ...state, duration: e.target.value }); setWarning(''); }}
             className={getFieldValidationClass('duration', state.duration)}
           />
-          {!isValidNumber(state.duration) && <div className="invalid-feedback d-block">Please enter a valid duration greater than 0.</div>}
+          {submitted && !isValidNumber(state.duration) && <div className="invalid-feedback d-block">Please enter a valid duration greater than 0.</div>}
         </div>
 
         {state.exerciseType !== 'Gym' && (
@@ -232,7 +235,7 @@ const TrackExercise = ({ currentUser }) => {
               onChange={(e) => { setState({ ...state, distance: e.target.value }); setWarning(''); }}
               className={getFieldValidationClass('distance', state.distance)}
             />
-            {!isValidNumber(state.distance) && <div className="invalid-feedback d-block">Please enter a valid distance greater than 0.</div>}
+            {submitted && !isValidNumber(state.distance) && <div className="invalid-feedback d-block">Please enter a valid distance greater than 0.</div>}
           </div>
         )}
 
@@ -250,7 +253,7 @@ const TrackExercise = ({ currentUser }) => {
               onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
               className={getFieldValidationClass('steps', state.steps)}
             />
-            {!isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
+            {submitted && !isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
           </div>
         )}
 
