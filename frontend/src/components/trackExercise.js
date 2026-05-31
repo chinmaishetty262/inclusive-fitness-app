@@ -271,8 +271,6 @@ const TrackExercise = ({ currentUser }) => {
           <Button
             variant="success"
             type="submit"
-            disabled={!isFormValid()}
-            style={{ opacity: isFormValid() ? 1 : 0.65, cursor: isFormValid() ? 'pointer' : 'not-allowed' }}
           >
             Save Activity
           </Button>
