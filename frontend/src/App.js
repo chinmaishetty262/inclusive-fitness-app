@@ -13,6 +13,7 @@ import Footer from './components/footer';
 import Login from './components/login';
 import Signup from './components/signup';
 import Journal from './components/journal';
+import WorkoutGuides from './components/workoutGuides';
 import logo from './img/InclusiveFitness.png';
 import AccessibilityToggle from './components/AccessibilityToggle';
 import initGlobalErrorHandling from './errorHandler';
@@ -82,6 +83,7 @@ function App() {
               <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
               <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
               <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
+              <Route path="/workout-guides" element={isLoggedIn ? <WorkoutGuides /> : <Navigate to="/login" />} />
             </Routes>
           </main>
           <Footer />

@@ -19,3 +19,5 @@ export const getGoals = username => api.get(`/goals/${username}`);
 export const addGoal = newGoal => api.post('/goals/add', newGoal);
 export const updateGoal = (id, updatedGoal) => api.put(`/goals/update/${id}`, updatedGoal);
 export const deleteGoal = id => api.delete(`/goals/${id}`);
+export const getWorkoutGuides = (category) =>
+  api.get('/workout-guides', { params: category ? { category } : {} });
