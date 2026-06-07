@@ -32,17 +32,20 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final Logger logger =
         LoggerFactory.getLogger(JwtFilter.class);
 
-    @Autowired
+    @Autowired(required = false)
     private MeterRegistry meterRegistry;
 
     private Counter jwtFailureCounter;
 
     @PostConstruct
     public void init() {
-    jwtFailureCounter =
-            Counter.builder("auth.jwt.invalid")
-                    .description("Invalid JWT tokens")
-                    .register(meterRegistry);
+
+    if (meterRegistry != null) {
+        jwtFailureCounter =
+                Counter.builder("auth.jwt.invalid")
+                        .description("Invalid JWT tokens")
+                        .register(meterRegistry);
+    }
     }
 
     @Override
@@ -71,7 +74,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
             System.out.println("Token expired");
             logger.warn("Unauthorized request received");
-            jwtFailureCounter.increment();
+            if (jwtFailureCounter != null) {
+                jwtFailureCounter.increment();
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Token expired\"}");
@@ -82,7 +87,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
             System.out.println("Invalid token");
              logger.warn("Unauthorized request received");
-             jwtFailureCounter.increment();
+            if (jwtFailureCounter != null) {
+                jwtFailureCounter.increment();
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Invalid token\"}");
