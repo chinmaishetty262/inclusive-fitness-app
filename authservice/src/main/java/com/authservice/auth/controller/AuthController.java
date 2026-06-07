@@ -17,11 +17,9 @@ import com.authservice.auth.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
-
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {

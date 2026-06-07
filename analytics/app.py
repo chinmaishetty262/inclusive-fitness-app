@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, current_app, render_template, jsonify, request
 from pymongo import MongoClient
 from flask_pymongo import PyMongo
 from flask_cors import CORS
