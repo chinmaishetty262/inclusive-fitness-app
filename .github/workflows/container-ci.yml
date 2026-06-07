@@ -46,9 +46,3 @@ jobs:
       - name: Tear down containers
         if: always()
         run: docker compose -f docker-compose.ci.yml down --volumes --remove-orphans
-      - name: Upload test report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: build/reports/tests/test/

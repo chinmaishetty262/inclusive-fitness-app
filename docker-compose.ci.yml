@@ -39,6 +39,7 @@ services:
       SPRING_DATA_MONGODB_DATABASE: test 
       SPRING_DATA_MONGODB_URI: mongodb://root:cfgmla23@mongodb:27017/test?authSource=admin
       JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: test
     depends_on:
       mongodb:
         condition: service_healthy
