@@ -6,4 +6,6 @@ COPY . .
 
 RUN chmod +x gradlew
 
+ENV JAVA_TOOL_OPTIONS="-Dmanagement.metrics.enable.process=false -Dmanagement.metrics.enable.system=false"
+
 CMD ["./gradlew", "test", "--no-daemon"]
