@@ -14,6 +14,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import javax.annotation.PostConstruct;
+
 
 import java.io.IOException;
 
@@ -22,6 +28,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    private static final Logger logger =
+        LoggerFactory.getLogger(JwtFilter.class);
+
+    @Autowired(required = false)
+    private MeterRegistry meterRegistry;
+
+    private Counter jwtFailureCounter;
+
+    @PostConstruct
+    public void init() {
+
+    if (meterRegistry != null) {
+        jwtFailureCounter =
+                Counter.builder("auth.jwt.invalid")
+                        .description("Invalid JWT tokens")
+                        .register(meterRegistry);
+    }
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -45,18 +70,26 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (ExpiredJwtException e) {
+            logger.warn("JWT validation failed: {}", e.getMessage());
 
             System.out.println("Token expired");
-
+            logger.warn("Unauthorized request received");
+            if (jwtFailureCounter != null) {
+                jwtFailureCounter.increment();
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Token expired\"}");
             return;
 
         } catch (JwtException e) {
+            logger.warn("JWT validation failed: {}", e.getMessage());
 
             System.out.println("Invalid token");
-
+             logger.warn("Unauthorized request received");
+            if (jwtFailureCounter != null) {
+                jwtFailureCounter.increment();
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Invalid token\"}");
