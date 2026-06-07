@@ -41,15 +41,13 @@ services:
       context: ./authservice
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATA_MONGODB_DATABASE=test
-      - SPRING_DATA_MONGODB_URI=mongodb://root:cfgmla23@mongodb:27017
-      - JWT_SECRET=${JWT_SECRET}
+      SPRING_DATA_MONGODB_DATABASE: test
+      SPRING_DATA_MONGODB_URI: mongodb://root:cfgmla23@mongodb:27017
+      JWT_SECRET: ${JWT_SECRET}
+    env_file:
+      - .env
     ports:
       - "8080:8080"
-    depends_on:
-      - mongodb
-    networks:
-      - app-network
 
   mongodb:
     image: mongo:latest

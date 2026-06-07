@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,6 +27,9 @@ jobs:
 
       - name: Start MongoDB for integration-dependent tests
         run: docker compose -f docker-compose.ci.yml up -d mongodb
+
+      - name: Wait for MongoDB to be healthy (optional safety)
+        run: sleep 10
 
       - name: Run frontend tests in container
         run: docker compose -f docker-compose.ci.yml run --rm frontend-test
