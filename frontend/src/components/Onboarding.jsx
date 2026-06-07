@@ -1,31 +1,83 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const goals = [
-    { id: 'lose-weight', label: '🔥 Lose Weight', tip: 'Focus on cardio and a calorie deficit.' },
-    { id: 'build-muscle', label: '💪 Build Muscle', tip: 'Prioritise strength training and protein intake.' },
-    { id: 'improve-stamina', label: '🏃 Improve Stamina', tip: 'Mix running, cycling and interval training.' },
-    { id: 'stay-active', label: '🧘 Stay Active', tip: 'Aim for 30 minutes of movement every day.' },
+    { id: 'lose-weight', label: '🔥 Lose Weight' },
+    { id: 'build-muscle', label: '💪 Build Muscle' },
+    { id: 'improve-stamina', label: '🏃 Improve Stamina' },
+    { id: 'stay-active', label: '🧘 Stay Active' },
 ];
 
 const levels = ['Beginner', 'Intermediate', 'Advanced'];
 
 const Onboarding = ({ onComplete }) => {
+    const navigate = useNavigate();
     const [step, setStep] = useState(0);
+    const [done, setDone] = useState(false);
     const [goal, setGoal] = useState('');
     const [level, setLevel] = useState('');
     const [reminders, setReminders] = useState(false);
     const [reminderTime, setReminderTime] = useState('08:00');
 
+    const scheduleReminder = (time) => {
+        if (Notification.permission === 'granted') {
+            const [hours, minutes] = time.split(':').map(Number);
+            const now = new Date();
+            const reminder = new Date();
+            reminder.setHours(hours, minutes, 0, 0);
+            if (reminder <= now) reminder.setDate(reminder.getDate() + 1);
+            const delay = reminder - now;
+            setTimeout(() => {
+                new Notification('Inclusive Fitness 💪', {
+                    body: `Time to move! Your goal: ${goal}`,
+                    icon: '/logo192.png'
+                });
+            }, delay);
+        }
+    };
+
     const finish = () => {
         const profile = { goal, level, reminders, reminderTime };
         localStorage.setItem('userProfile', JSON.stringify(profile));
+        if (reminders) {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') scheduleReminder(reminderTime);
+            });
+        }
+        setDone(true);
+    };
+
+    const goToGoals = () => {
+        onComplete();
+        navigate('/goals');
+    };
+
+    const skip = () => {
         onComplete();
     };
 
-    return (
-        <div className="onboarding-container" style={{ maxWidth: 500, margin: 'auto', padding: 32 }}>
+    if (done) {
+        return (
+            <div style={{ textAlign: 'center', padding: 32, maxWidth: 500, margin: 'auto' }}>
+                <h2>🎉 You're all set!</h2>
+                <p style={{ color: '#4b5d7e', marginBottom: 24, marginTop: 16 }}>
+                    Your goal has been saved. Head to the <strong>Goals</strong> page to set targets and track your progress.
+                </p>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                    <button className="btn btn-secondary" onClick={onComplete}>
+                        Go to Dashboard
+                    </button>
+                    <button className="btn btn-primary" onClick={goToGoals}>
+                        Go to Goals page →
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
-            {/* STEP 1 - Goal */}
+    return (
+        <div style={{ maxWidth: 500, margin: 'auto', padding: 32 }}>
+
             {step === 0 && (
                 <>
                     <h2>What's your fitness goal?</h2>
@@ -35,49 +87,31 @@ const Onboarding = ({ onComplete }) => {
                             <button
                                 key={g.id}
                                 onClick={() => setGoal(g.label)}
-                                style={{
-                                    padding: '20px 12px',
-                                    borderRadius: 12,
-                                    border: goal === g.label ? '3px solid #1f72ff' : '2px solid #ddd',
-                                    background: goal === g.label ? '#eef4ff' : '#fff',
-                                    cursor: 'pointer',
-                                    fontWeight: 600,
-                                    fontSize: 15,
-                                }}
+                                className={`onboarding-btn${goal === g.label ? ' onboarding-selected' : ''}`}
                             >
                                 {g.label}
                             </button>
                         ))}
                     </div>
                     <div style={{ marginTop: 32, display: 'flex', justifyContent: 'space-between' }}>
-                        <button className="btn btn-secondary" onClick={finish}>Skip</button>
+                        <button className="btn btn-secondary" onClick={skip}>Skip</button>
                         <button className="btn btn-primary" disabled={!goal} onClick={() => setStep(1)}>Next →</button>
                     </div>
                 </>
             )}
 
-            {/* STEP 2 - Level */}
             {step === 1 && (
                 <>
                     <h2>How active are you right now?</h2>
-                    <p style={{ color: '#666', marginBottom: 24 }}>Be honest — we'll suggest the right intensity.</p>
+                    <p style={{ color: '#666', marginBottom: 24 }}>Choose your intensity.</p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                         {levels.map(l => (
                             <button
                                 key={l}
                                 onClick={() => setLevel(l)}
-                                style={{
-                                    padding: '16px 20px',
-                                    borderRadius: 12,
-                                    border: level === l ? '3px solid #1f72ff' : '2px solid #ddd',
-                                    background: level === l ? '#eef4ff' : '#fff',
-                                    cursor: 'pointer',
-                                    fontWeight: 600,
-                                    fontSize: 15,
-                                    textAlign: 'left',
-                                }}
+                                className={`onboarding-btn onboarding-btn--level${level === l ? ' onboarding-selected' : ''}`}
                             >
-                                {l === 'Beginner' && '🌱 Beginner — I\'m just getting started'}
+                                {l === 'Beginner' && "🌱 Beginner — I'm just getting started"}
                                 {l === 'Intermediate' && '⚡ Intermediate — I exercise a few times a week'}
                                 {l === 'Advanced' && '🏆 Advanced — I train regularly and intensely'}
                             </button>
@@ -90,7 +124,6 @@ const Onboarding = ({ onComplete }) => {
                 </>
             )}
 
-            {/* STEP 3 - Reminders */}
             {step === 2 && (
                 <>
                     <h2>Stay on track 🔔</h2>
@@ -123,7 +156,6 @@ const Onboarding = ({ onComplete }) => {
                 </>
             )}
 
-            {/* Progress dots */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 32 }}>
                 {[0, 1, 2].map(i => (
                     <div key={i} style={{

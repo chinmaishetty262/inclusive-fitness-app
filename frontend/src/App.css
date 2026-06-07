@@ -455,11 +455,6 @@ input#duration {
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
-.form-group.required .form-control:valid {
-  border-color: #28a745;
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-}
-
 .form-group.required .form-label::after {
   content: " *";
   color: #dc3545;
@@ -534,7 +529,7 @@ input#duration {
 }
 
 .form-field-group .form-control[type="number"] {
-  -moz-appearance: textfield;
+  appearance: textfield;
   padding-right: 16px;
 }
 
@@ -547,11 +542,6 @@ input#duration {
 .form-field-group .form-control:invalid {
   border-color: #dc3545;
   box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-}
-
-.form-field-group .form-control:valid {
-  border-color: #28a745;
-  box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
 }
 
 .submit-button-container {
@@ -614,4 +604,166 @@ input#duration {
   background-size: 12px !important;
   opacity: 1 !important;
   border-radius: 4px !important;
+}
+
+[data-theme="high-contrast"] .onboarding-selected {
+  outline: 3px solid white !important;
+  outline-offset: 2px !important;
+}
+
+[data-theme="high-contrast"] .onboarding-selected {
+  outline: 3px solid white !important;
+  outline-offset: 2px !important;
+}
+
+/* Goal setting profile card in high contrast */
+[data-theme="high-contrast"] .goal-setting-container .form-field-group,
+[data-theme="high-contrast"] .goal-setting-container div[style] {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-setting-container p,
+[data-theme="high-contrast"] .goal-setting-container h4 {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-banner {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* The goal notice card (blue/pink one) */
+[data-theme="high-contrast"] .dashboard-tip-card,
+[data-theme="high-contrast"] .dashboard-goal-notice {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* The orange/yellow tip card */
+[data-theme="high-contrast"] .dashboard-level-tip {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-notice p {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-notice a {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-level-tip {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] button:active,
+[data-theme="high-contrast"] button:focus {
+  background-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary:active,
+[data-theme="high-contrast"] .btn-secondary:focus {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected:focus,
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+/* Onboarding buttons */
+.onboarding-btn {
+  padding: 20px 12px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #12213c;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.onboarding-btn--level {
+  padding: 16px 20px;
+  text-align: left;
+}
+
+.onboarding-btn.onboarding-selected {
+  border: 3px solid #1f72ff;
+  background: #eef4ff;
+  color: #12213c;
+}
+
+[data-theme="high-contrast"] .onboarding-btn {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffffff !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:hover,
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-primary:focus,
+[data-theme="high-contrast"] .btn-primary:hover,
+[data-theme="high-contrast"] .btn-primary:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  border-color: var(--accent) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary:focus,
+[data-theme="high-contrast"] .btn-secondary:active {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-primary:disabled {
+  background-color: #444 !important;
+  color: #aaaaaa !important;
+  border-color: #444 !important;
 }

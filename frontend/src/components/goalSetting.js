@@ -10,14 +10,13 @@ const getToday = () => {
 };
 
 const formatDate = (dateValue) => {
-  if (!dateValue) {
-    return 'No date set';
-  }
-
+  if (!dateValue) return 'No date set';
   return new Date(dateValue).toLocaleDateString();
 };
 
-const GoalSetting = ({ currentUser }) => {
+const GoalSetting = ({ currentUser, onChangePreferences }) => {
+  const [profile, setProfile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
+  const [profileLevel, setProfileLevel] = useState(profile.level || '');
   const [goalType, setGoalType] = useState('');
   const [targetValue, setTargetValue] = useState('');
   const [period, setPeriod] = useState('Weekly');
@@ -29,6 +28,14 @@ const GoalSetting = ({ currentUser }) => {
   const [updatingGoalId, setUpdatingGoalId] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [touched, setTouched] = useState({});
+
+  const handleLevelChange = (newLevel) => {
+    const updatedProfile = { ...profile, level: newLevel };
+    localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
+    setProfile(updatedProfile);
+    setProfileLevel(newLevel);
+  };
 
   const isFormValid = () => (
     goalType !== ''
@@ -39,10 +46,7 @@ const GoalSetting = ({ currentUser }) => {
   );
 
   const loadGoals = useCallback(async () => {
-    if (!currentUser) {
-      return;
-    }
-
+    if (!currentUser) return;
     try {
       setLoadingGoals(true);
       setError('');
@@ -65,10 +69,12 @@ const GoalSetting = ({ currentUser }) => {
     setTargetValue('');
     setPeriod('Weekly');
     setTargetDate(getToday());
+    setTouched({});
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setTouched({ goalType: true, targetValue: true, targetDate: true });
 
     if (!isFormValid()) {
       setError('Please complete all goal fields with a future target date and a target greater than 0.');
@@ -120,7 +126,6 @@ const GoalSetting = ({ currentUser }) => {
 
   const handleStatusChange = async (goal) => {
     const nextStatus = goal.status === 'Completed' ? 'Active' : 'Completed';
-
     try {
       setUpdatingGoalId(goal._id);
       setError('');
@@ -141,16 +146,47 @@ const GoalSetting = ({ currentUser }) => {
   };
 
   const getStatusButtonText = (goal) => {
-    if (updatingGoalId === goal._id) {
-      return 'Updating...';
-    }
-
+    if (updatingGoalId === goal._id) return 'Updating...';
     return goal.status === 'Completed' ? 'Reopen Goal' : 'Mark Complete';
   };
 
   return (
     <div className="goal-setting-container">
       <h3>Set Your Fitness Goals</h3>
+
+      {profile.goal && (
+        <div style={{
+          background: '#eef4ff',
+          border: '1px solid rgba(31,114,255,0.2)',
+          borderRadius: 12,
+          padding: '16px 20px',
+          marginBottom: 24,
+          textAlign: 'left',
+        }}>
+          <h4 style={{ marginBottom: 8 }}>🎯 Your fitness profile</h4>
+          <p style={{ margin: '4px 0', color: '#4b5d7e' }}>
+            <strong>Goal:</strong> {profile.goal}
+          </p>
+          {profile.level && (
+            <p style={{ margin: '4px 0', color: '#4b5d7e' }}>
+              <strong>Activity level:</strong> {profile.level}
+            </p>
+          )}
+          {(profile.reminders === true || profile.reminders === 'true') && profile.reminderTime && (
+            <p style={{ margin: '4px 0', color: '#4b5d7e' }}>
+              <strong>Reminder set for:</strong> {profile.reminderTime}
+            </p>
+          )}
+          <button
+            type="button"
+            className="btn btn-secondary"
+            style={{ marginTop: 12 }}
+            onClick={onChangePreferences}
+          >
+            ✏️ Change preferences
+          </button>
+        </div>
+      )}
 
       <Form onSubmit={handleSubmit}>
         <div className="form-field-group">
@@ -161,15 +197,18 @@ const GoalSetting = ({ currentUser }) => {
             onChange={(event) => {
               setGoalType(event.target.value);
               setError('');
+              setTouched(t => ({ ...t, goalType: true }));
             }}
-            className={goalType ? 'is-valid' : 'is-invalid'}
+            className={!touched.goalType ? '' : goalType ? 'is-valid' : 'is-invalid'}
           >
             <option value="">Choose a goal</option>
             <option value="Steps">Steps</option>
             <option value="Distance">Distance</option>
             <option value="Active Minutes">Active Minutes</option>
           </Form.Control>
-          {!goalType && <div className="invalid-feedback d-block">Please select a goal type.</div>}
+          {touched.goalType && !goalType && (
+            <div className="invalid-feedback d-block">Please select a goal type.</div>
+          )}
         </div>
 
         <div className="form-field-group">
@@ -184,10 +223,13 @@ const GoalSetting = ({ currentUser }) => {
             onChange={(event) => {
               setTargetValue(event.target.value);
               setError('');
+              setTouched(t => ({ ...t, targetValue: true }));
             }}
-            className={Number(targetValue) > 0 ? 'is-valid' : 'is-invalid'}
+            className={!touched.targetValue ? '' : Number(targetValue) > 0 ? 'is-valid' : 'is-invalid'}
           />
-          {Number(targetValue) <= 0 && <div className="invalid-feedback d-block">Please enter a target greater than 0.</div>}
+          {touched.targetValue && Number(targetValue) <= 0 && (
+            <div className="invalid-feedback d-block">Please enter a target greater than 0.</div>
+          )}
         </div>
 
         <div className="form-field-group">
@@ -216,18 +258,22 @@ const GoalSetting = ({ currentUser }) => {
             onChange={(event) => {
               setTargetDate(event.target.value);
               setError('');
+              setTouched(t => ({ ...t, targetDate: true }));
             }}
-            className={targetDate && targetDate >= getToday() ? 'is-valid' : 'is-invalid'}
+            className={!touched.targetDate ? 'is-valid' : targetDate >= getToday() ? 'is-valid' : 'is-invalid'}
+            style={{ paddingRight: '40px' }}
           />
-          {targetDate < getToday() && <div className="invalid-feedback d-block">Please choose today or a future date.</div>}
+          {touched.targetDate && targetDate < getToday() && (
+            <div className="invalid-feedback d-block">Please choose today or a future date.</div>
+          )}
         </div>
 
         <div className="submit-button-container">
           <Button
             variant="success"
             type="submit"
-            disabled={!isFormValid() || saving}
-            style={{ opacity: isFormValid() && !saving ? 1 : 0.65, cursor: isFormValid() && !saving ? 'pointer' : 'not-allowed' }}
+            disabled={saving}
+            style={{ cursor: saving ? 'not-allowed' : 'pointer' }}
           >
             {saving ? 'Saving...' : 'Save Goal'}
           </Button>
@@ -239,7 +285,6 @@ const GoalSetting = ({ currentUser }) => {
 
       <section className="saved-goals-section">
         <h4>Saved Goals</h4>
-
         {loadingGoals ? (
           <div className="goal-loading">Loading goals...</div>
         ) : goals.length > 0 ? (
