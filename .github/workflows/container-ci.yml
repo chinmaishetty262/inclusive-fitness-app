@@ -41,7 +41,7 @@ jobs:
         run: docker compose -f docker-compose.ci.yml run --rm analytics-test
 
       - name: Run authservice tests in container
-        run: docker compose -f docker-compose.ci.yml run --rm authservice-test
+        run: docker compose -f docker-compose.ci.yml run --rm authservice-test 
 
       - name: Tear down containers
         if: always()
