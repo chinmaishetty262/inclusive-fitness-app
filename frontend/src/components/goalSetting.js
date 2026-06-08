@@ -15,8 +15,7 @@ const formatDate = (dateValue) => {
 };
 
 const GoalSetting = ({ currentUser, onChangePreferences }) => {
-  const [profile, setProfile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
-  const [profileLevel, setProfileLevel] = useState(profile.level || '');
+  const [profile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
   const [goalType, setGoalType] = useState('');
   const [targetValue, setTargetValue] = useState('');
   const [period, setPeriod] = useState('Weekly');
@@ -29,13 +28,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [touched, setTouched] = useState({});
-
-  const handleLevelChange = (newLevel) => {
-    const updatedProfile = { ...profile, level: newLevel };
-    localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
-    setProfile(updatedProfile);
-    setProfileLevel(newLevel);
-  };
 
   const isFormValid = () => (
     goalType !== ''

@@ -6,7 +6,6 @@ import './App.css';
 import NavbarComponent from './components/navbar';
 import TrackExercise from './components/trackExercise';
 import ActivitiesSummary from './components/statistics';
-import ActivityFeed from './components/activityFeed';
 import Dashboard from './components/dashboard';
 import Footer from './components/footer';
 import Login from './components/login';
@@ -22,12 +21,18 @@ import GoalSetting from './components/goalSetting';
 
 initGlobalErrorHandling();
 
+const canUseNotifications = () => (
+  typeof window !== 'undefined'
+  && 'Notification' in window
+  && typeof window.Notification.requestPermission === 'function'
+);
+
 const scheduleReminder = (time, goal) => {
   const checkReminder = () => {
     const now = new Date();
     const [hours, minutes] = time.split(':').map(Number);
-    if (now.getHours() === hours && now.getMinutes() === minutes) {
-      new Notification('Inclusive Fitness 💪', {
+    if (canUseNotifications() && now.getHours() === hours && now.getMinutes() === minutes) {
+      new window.Notification('Inclusive Fitness', {
         body: `Time to move! Your goal: ${goal}`,
         icon: '/logo192.png'
       });
@@ -57,15 +62,15 @@ function App() {
 
     const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
 
-    if (profile.reminders && profile.reminderTime) {
+    if (profile.reminders && profile.reminderTime && canUseNotifications()) {
       const setup = () => {
         interval = scheduleReminder(profile.reminderTime, profile.goal);
       };
 
-      if (Notification.permission === 'granted') {
+      if (window.Notification.permission === 'granted') {
         setup();
-      } else if (Notification.permission !== 'denied') {
-        Notification.requestPermission().then(permission => {
+      } else if (window.Notification.permission !== 'denied') {
+        window.Notification.requestPermission().then(permission => {
           if (permission === 'granted') setup();
         });
       }
@@ -102,6 +107,22 @@ function App() {
     }
   };
 
+  const completeOnboarding = () => {
+    setShowOnboarding(false);
+  };
+
+  const renderDashboard = () => (
+    showOnboarding
+      ? <Onboarding onComplete={completeOnboarding} />
+      : <Dashboard currentUser={currentUser} />
+  );
+
+  const renderGoalSetting = () => (
+    showOnboarding
+      ? <Onboarding onComplete={completeOnboarding} />
+      : <GoalSetting currentUser={currentUser} onChangePreferences={handleChangePreferences} />
+  );
+
   return (
     <ErrorBoundary>
       <div className="App">
@@ -115,26 +136,22 @@ function App() {
           {isLoggedIn && <NavbarComponent onLogout={handleLogout} />}
 
           <main className="componentContainer">
-            {showOnboarding ? (
-              <Onboarding onComplete={() => setShowOnboarding(false)} />
-            ) : (
-              <Routes>
-                <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
-                <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={(username) => {
-                  localStorage.removeItem("userProfile");
-                  setIsLoggedIn(true);
-                  setCurrentUser(username);
-                  setShowOnboarding(true);
-                }} />} />
-                <Route path="/" element={isLoggedIn ? <Dashboard currentUser={currentUser} /> : <Navigate to="/login" />} />
-                <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
-                <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
-                <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
-                <Route path="/workout-guides" element={isLoggedIn ? <WorkoutGuides /> : <Navigate to="/login" />} />
-                <Route path="/goal-setting" element={isLoggedIn ? <GoalSetting currentUser={currentUser} onChangePreferences={handleChangePreferences} /> : <Navigate to="/login" />} />
-                <Route path="/goals" element={isLoggedIn ? <GoalSetting currentUser={currentUser} onChangePreferences={handleChangePreferences} /> : <Navigate to="/login" />} />
-              </Routes>
-            )}
+            <Routes>
+              <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
+              <Route path="/signup" element={isLoggedIn ? <Navigate to="/" /> : <Signup onSignup={(username) => {
+                localStorage.removeItem("userProfile");
+                setIsLoggedIn(true);
+                setCurrentUser(username);
+                setShowOnboarding(true);
+              }} />} />
+              <Route path="/" element={isLoggedIn ? renderDashboard() : <Navigate to="/login" />} />
+              <Route path="/trackExercise" element={isLoggedIn ? <TrackExercise currentUser={currentUser} /> : <Navigate to="/login" />} />
+              <Route path="/fitness" element={isLoggedIn ? <ActivitiesSummary currentUser={currentUser} showSummaryOnly={false} /> : <Navigate to="/login" />} />
+              <Route path="/journal" element={isLoggedIn ? <Journal currentUser={currentUser} /> : <Navigate to="/login" />} />
+              <Route path="/workout-guides" element={isLoggedIn ? <WorkoutGuides /> : <Navigate to="/login" />} />
+              <Route path="/goal-setting" element={isLoggedIn ? renderGoalSetting() : <Navigate to="/login" />} />
+              <Route path="/goals" element={isLoggedIn ? renderGoalSetting() : <Navigate to="/login" />} />
+            </Routes>
           </main>
 
           <Footer />

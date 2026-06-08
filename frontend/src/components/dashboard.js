@@ -2,7 +2,7 @@ import React from 'react';
 import './dashboard.css';
 import ActivitiesSummary from './statistics';
 import ActivityFeed from './activityFeed';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const levelContent = {
   Beginner: "💡 Beginner tip: Rest days are just as important as workout days. Don't skip them!",

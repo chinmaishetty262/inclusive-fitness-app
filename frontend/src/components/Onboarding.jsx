@@ -16,6 +16,12 @@ const levelDescriptions = {
     Advanced: '🏆 Advanced — I train regularly and intensely',
 };
 
+const canUseNotifications = () => (
+    typeof window !== 'undefined'
+    && 'Notification' in window
+    && typeof window.Notification.requestPermission === 'function'
+);
+
 const Onboarding = ({ onComplete }) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(0);
@@ -26,7 +32,7 @@ const Onboarding = ({ onComplete }) => {
     const [reminderTime, setReminderTime] = useState('08:00');
 
     const scheduleReminder = (time) => {
-        if (Notification.permission === 'granted') {
+        if (canUseNotifications() && window.Notification.permission === 'granted') {
             const [hours, minutes] = time.split(':').map(Number);
             const now = new Date();
             const reminder = new Date();
@@ -34,7 +40,7 @@ const Onboarding = ({ onComplete }) => {
             if (reminder <= now) reminder.setDate(reminder.getDate() + 1);
             const delay = reminder - now;
             setTimeout(() => {
-                new Notification('Inclusive Fitness 💪', {
+                new window.Notification('Inclusive Fitness', {
                     body: `Time to move! Your goal: ${goal}`,
                     icon: '/logo192.png'
                 });
@@ -45,8 +51,8 @@ const Onboarding = ({ onComplete }) => {
     const finish = () => {
         const profile = { goal, level, reminders, reminderTime };
         localStorage.setItem('userProfile', JSON.stringify(profile));
-        if (reminders) {
-            Notification.requestPermission().then(permission => {
+        if (reminders && canUseNotifications()) {
+            window.Notification.requestPermission().then(permission => {
                 if (permission === 'granted') scheduleReminder(reminderTime);
             });
         }
