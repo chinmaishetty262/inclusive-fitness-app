@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { useLocation } from 'react-router-dom';
 import { addGoal, deleteGoal, getGoals, getTrackedActivities, updateGoal } from '../api';
 import './goalSetting.css';
 
@@ -55,7 +56,28 @@ const formatGoalValue = (value, goalType) => {
   return Math.round(Number(value) || 0).toString();
 };
 
+const getTrackedActivitySummary = (activity) => {
+  if (!activity) return '';
+
+  const parts = [
+    `${activity.exerciseType} saved`,
+    `${Number(activity.duration) || 0} active min`,
+  ];
+
+  if (Number(activity.distance) > 0) {
+    parts.push(`${Number(activity.distance).toFixed(2)} km`);
+  }
+
+  if (Number(activity.steps) > 0) {
+    parts.push(`${Math.round(Number(activity.steps))} steps`);
+  }
+
+  return parts.join(' • ');
+};
+
 const GoalSetting = ({ currentUser, onChangePreferences }) => {
+  const location = useLocation();
+  const trackedActivity = location.state?.trackedActivity;
   const [profile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
   const [goalType, setGoalType] = useState('');
   const [targetValue, setTargetValue] = useState('');
@@ -114,6 +136,12 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     loadGoals();
     loadActivities();
   }, [loadGoals, loadActivities]);
+
+  useEffect(() => {
+    if (trackedActivity) {
+      setSuccessMessage('Goal progress updated from your latest tracked activity.');
+    }
+  }, [trackedActivity]);
 
   const getGoalProgress = (goal) => {
     const startDate = parseDate(goal.startDate);
@@ -239,6 +267,75 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     return goal.status === 'Completed' ? 'Reopen Goal' : 'Mark Complete';
   };
 
+  const renderSavedGoals = () => (
+    <section className="saved-goals-section">
+      <h4>Saved Goals</h4>
+      {loadingGoals ? (
+        <div className="goal-loading">Loading goals...</div>
+      ) : goals.length > 0 ? (
+        <div className="goal-list">
+          {goals.map((goal) => (
+            <div key={goal._id} className="goal-list-item">
+              <div className="goal-list-header">
+                <strong>{goal.goalType}</strong>
+                <span className="goal-status">{goal.status}</span>
+              </div>
+              <div className="goal-detail">Target: {goal.targetValue}</div>
+              <div className="goal-detail">Period: {goal.period}</div>
+              <div className="goal-detail">Target date: {formatDate(goal.targetDate)}</div>
+              {(() => {
+                const progress = getGoalProgress(goal);
+                const unit = getGoalUnit(goal.goalType);
+
+                return (
+                  <div className="goal-progress" aria-label={`${goal.goalType} progress`}>
+                    <div className="goal-progress-summary">
+                      <span>
+                        Progress: {formatGoalValue(progress.currentValue, goal.goalType)} / {formatGoalValue(goal.targetValue, goal.goalType)} {unit}
+                      </span>
+                      <span>{Math.round(progress.percentage)}%</span>
+                    </div>
+                    <div className="goal-progress-track" aria-hidden="true">
+                      <div
+                        className="goal-progress-fill"
+                        style={{ width: `${progress.percentage}%` }}
+                      />
+                    </div>
+                    {loadingActivities ? (
+                      <div className="goal-progress-note">Calculating progress from tracked activities...</div>
+                    ) : progress.isReached ? (
+                      <div className="goal-progress-note goal-progress-note--success">Target reached from tracked activities.</div>
+                    ) : (
+                      <div className="goal-progress-note">Progress updates when matching activities are tracked.</div>
+                    )}
+                  </div>
+                );
+              })()}
+              <div className="goal-actions">
+                <Button
+                  variant={goal.status === 'Completed' ? 'primary' : 'success'}
+                  onClick={() => handleStatusChange(goal)}
+                  disabled={updatingGoalId === goal._id}
+                >
+                  {getStatusButtonText(goal)}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => handleDelete(goal._id)}
+                  disabled={deletingGoalId === goal._id}
+                >
+                  {deletingGoalId === goal._id ? 'Deleting...' : 'Delete Goal'}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="empty-goals-message">No goals saved yet.</p>
+      )}
+    </section>
+  );
+
   return (
     <div className="goal-setting-container">
       <h3>Set Your Fitness Goals</h3>
@@ -276,6 +373,14 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
           </button>
         </div>
       )}
+
+      {trackedActivity && (
+        <div className="latest-activity-update" role="status">
+          {getTrackedActivitySummary(trackedActivity)}
+        </div>
+      )}
+
+      {renderSavedGoals()}
 
       <Form onSubmit={handleSubmit}>
         <div className="form-field-group">
@@ -371,73 +476,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
 
       {error && <div className="warning-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
-
-      <section className="saved-goals-section">
-        <h4>Saved Goals</h4>
-        {loadingGoals ? (
-          <div className="goal-loading">Loading goals...</div>
-        ) : goals.length > 0 ? (
-          <div className="goal-list">
-            {goals.map((goal) => (
-              <div key={goal._id} className="goal-list-item">
-                <div className="goal-list-header">
-                  <strong>{goal.goalType}</strong>
-                  <span className="goal-status">{goal.status}</span>
-                </div>
-                <div className="goal-detail">Target: {goal.targetValue}</div>
-                <div className="goal-detail">Period: {goal.period}</div>
-                <div className="goal-detail">Target date: {formatDate(goal.targetDate)}</div>
-                {(() => {
-                  const progress = getGoalProgress(goal);
-                  const unit = getGoalUnit(goal.goalType);
-
-                  return (
-                    <div className="goal-progress" aria-label={`${goal.goalType} progress`}>
-                      <div className="goal-progress-summary">
-                        <span>
-                          Progress: {formatGoalValue(progress.currentValue, goal.goalType)} / {formatGoalValue(goal.targetValue, goal.goalType)} {unit}
-                        </span>
-                        <span>{Math.round(progress.percentage)}%</span>
-                      </div>
-                      <div className="goal-progress-track" aria-hidden="true">
-                        <div
-                          className="goal-progress-fill"
-                          style={{ width: `${progress.percentage}%` }}
-                        />
-                      </div>
-                      {loadingActivities ? (
-                        <div className="goal-progress-note">Calculating progress from tracked activities...</div>
-                      ) : progress.isReached ? (
-                        <div className="goal-progress-note goal-progress-note--success">Target reached from tracked activities.</div>
-                      ) : (
-                        <div className="goal-progress-note">Progress updates when matching activities are tracked.</div>
-                      )}
-                    </div>
-                  );
-                })()}
-                <div className="goal-actions">
-                  <Button
-                    variant={goal.status === 'Completed' ? 'primary' : 'success'}
-                    onClick={() => handleStatusChange(goal)}
-                    disabled={updatingGoalId === goal._id}
-                  >
-                    {getStatusButtonText(goal)}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleDelete(goal._id)}
-                    disabled={deletingGoalId === goal._id}
-                  >
-                    {deletingGoalId === goal._id ? 'Deleting...' : 'Delete Goal'}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="empty-goals-message">No goals saved yet.</p>
-        )}
-      </section>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import GoalSetting from './goalSetting';
 import { getGoals, getTrackedActivities } from '../api';
 
@@ -63,7 +64,11 @@ describe('GoalSetting progress from tracked activities', () => {
       ],
     });
 
-    render(<GoalSetting currentUser="alex@example.com" onChangePreferences={jest.fn()} />);
+    render(
+      <MemoryRouter>
+        <GoalSetting currentUser="alex@example.com" onChangePreferences={jest.fn()} />
+      </MemoryRouter>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/Progress: 6500 \/ 10000 steps/i)).toBeInTheDocument();
