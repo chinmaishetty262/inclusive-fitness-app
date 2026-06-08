@@ -10,6 +10,12 @@ const goals = [
 
 const levels = ['Beginner', 'Intermediate', 'Advanced'];
 
+const levelDescriptions = {
+    Beginner: "🌱 Beginner — I'm just getting started",
+    Intermediate: '⚡ Intermediate — I exercise a few times a week',
+    Advanced: '🏆 Advanced — I train regularly and intensely',
+};
+
 const Onboarding = ({ onComplete }) => {
     const navigate = useNavigate();
     const [step, setStep] = useState(0);
@@ -64,10 +70,10 @@ const Onboarding = ({ onComplete }) => {
                     Your goal has been saved. Head to the <strong>Goals</strong> page to set targets and track your progress.
                 </p>
                 <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                    <button className="btn btn-secondary" onClick={onComplete}>
+                    <button className="btn btn-secondary" onClick={onComplete} aria-label="Go to Dashboard">
                         Go to Dashboard
                     </button>
-                    <button className="btn btn-primary" onClick={goToGoals}>
+                    <button className="btn btn-primary" onClick={goToGoals} aria-label="Go to Goals page">
                         Go to Goals page →
                     </button>
                 </div>
@@ -86,6 +92,9 @@ const Onboarding = ({ onComplete }) => {
                         {goals.map(g => (
                             <button
                                 key={g.id}
+                                role="switch"
+                                aria-checked={goal === g.label}
+                                aria-label={goal === g.label ? `${g.label}, selected` : `${g.label}, not selected`}
                                 onClick={() => setGoal(g.label)}
                                 className={`onboarding-btn${goal === g.label ? ' onboarding-selected' : ''}`}
                             >
@@ -94,8 +103,15 @@ const Onboarding = ({ onComplete }) => {
                         ))}
                     </div>
                     <div style={{ marginTop: 32, display: 'flex', justifyContent: 'space-between' }}>
-                        <button className="btn btn-secondary" onClick={skip}>Skip</button>
-                        <button className="btn btn-primary" disabled={!goal} onClick={() => setStep(1)}>Next →</button>
+                        <button className="btn btn-secondary" onClick={skip} aria-label="Skip onboarding">Skip</button>
+                        <button
+                            className="btn btn-primary"
+                            disabled={!goal}
+                            onClick={() => setStep(1)}
+                            aria-label={!goal ? 'Select a goal to continue' : 'Next step'}
+                        >
+                            Next →
+                        </button>
                     </div>
                 </>
             )}
@@ -108,18 +124,26 @@ const Onboarding = ({ onComplete }) => {
                         {levels.map(l => (
                             <button
                                 key={l}
+                                role="switch"
+                                aria-checked={level === l}
+                                aria-label={level === l ? `${l}, selected` : `${l}, not selected`}
                                 onClick={() => setLevel(l)}
                                 className={`onboarding-btn onboarding-btn--level${level === l ? ' onboarding-selected' : ''}`}
                             >
-                                {l === 'Beginner' && "🌱 Beginner — I'm just getting started"}
-                                {l === 'Intermediate' && '⚡ Intermediate — I exercise a few times a week'}
-                                {l === 'Advanced' && '🏆 Advanced — I train regularly and intensely'}
+                                {levelDescriptions[l]}
                             </button>
                         ))}
                     </div>
                     <div style={{ marginTop: 32, display: 'flex', justifyContent: 'space-between' }}>
-                        <button className="btn btn-secondary" onClick={() => setStep(0)}>← Back</button>
-                        <button className="btn btn-primary" disabled={!level} onClick={() => setStep(2)}>Next →</button>
+                        <button className="btn btn-secondary" onClick={() => setStep(0)} aria-label="Back to goal selection">← Back</button>
+                        <button
+                            className="btn btn-primary"
+                            disabled={!level}
+                            onClick={() => setStep(2)}
+                            aria-label={!level ? 'Select an activity level to continue' : 'Next step'}
+                        >
+                            Next →
+                        </button>
                     </div>
                 </>
             )}
@@ -129,36 +153,47 @@ const Onboarding = ({ onComplete }) => {
                     <h2>Stay on track 🔔</h2>
                     <p style={{ color: '#666', marginBottom: 24 }}>Want a daily nudge to keep you moving?</p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
-                        <label style={{ fontWeight: 600 }}>Send me motivation reminders</label>
+                        <label htmlFor="reminders-checkbox" style={{ fontWeight: 600 }}>
+                            Send me motivation reminders
+                        </label>
                         <input
+                            id="reminders-checkbox"
                             type="checkbox"
                             checked={reminders}
                             onChange={e => setReminders(e.target.checked)}
+                            aria-label={reminders ? 'Disable motivation reminders' : 'Enable motivation reminders'}
                             style={{ width: 20, height: 20, cursor: 'pointer' }}
                         />
                     </div>
                     {reminders && (
                         <div style={{ marginBottom: 24 }}>
-                            <label style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>Reminder time</label>
+                            <label htmlFor="reminder-time" style={{ fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                                Reminder time
+                            </label>
                             <input
+                                id="reminder-time"
                                 type="time"
                                 value={reminderTime}
                                 onChange={e => setReminderTime(e.target.value)}
                                 className="form-control"
+                                aria-label="Set daily reminder time"
                                 style={{ width: 160 }}
                             />
                         </div>
                     )}
                     <div style={{ marginTop: 32, display: 'flex', justifyContent: 'space-between' }}>
-                        <button className="btn btn-secondary" onClick={() => setStep(1)}>← Back</button>
-                        <button className="btn btn-success" onClick={finish}>Finish 🎉</button>
+                        <button className="btn btn-secondary" onClick={() => setStep(1)} aria-label="Back to activity level selection">← Back</button>
+                        <button className="btn btn-success" onClick={finish} aria-label="Finish setup and save profile">Finish 🎉</button>
                     </div>
                 </>
             )}
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 32 }}>
+            <div
+                aria-label={`Step ${step + 1} of 3`}
+                style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 32 }}
+            >
                 {[0, 1, 2].map(i => (
-                    <div key={i} style={{
+                    <div key={i} aria-hidden="true" style={{
                         width: 10, height: 10, borderRadius: '50%',
                         background: step === i ? '#1f72ff' : '#ddd'
                     }} />
