@@ -12,6 +12,18 @@ import OtherIcon from '@material-ui/icons/HelpOutline';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+const getCountFieldLabel = (exerciseType) => {
+  if (exerciseType === 'Gym') return 'Reps';
+  if (exerciseType === 'Cycling') return 'Laps';
+  return 'Steps';
+};
+
+const getCountFieldPlaceholder = (exerciseType) => {
+  if (exerciseType === 'Gym') return 'e.g., 60';
+  if (exerciseType === 'Cycling') return 'e.g., 10';
+  return 'e.g., 6000';
+};
+
 const TrackExercise = ({ currentUser }) => {
   const navigate = useNavigate();
   const [state, setState] = useState({
@@ -36,17 +48,17 @@ const TrackExercise = ({ currentUser }) => {
       return false;
     }
 
-    // Swimming doesn't require steps
+    // Swimming doesn't require a count field.
     if (state.exerciseType === 'Swimming') {
       return isValidNumber(state.distance);
     }
 
-    // Gym doesn't require distance
+    // Gym tracks reps instead of distance.
     if (state.exerciseType === 'Gym') {
       return isValidNumber(state.steps);
     }
 
-    // Other exercise types require both distance and steps
+    // Cycling uses laps in the shared count field; other types use steps.
     return isValidNumber(state.distance) && isValidNumber(state.steps);
   };
 
@@ -282,19 +294,23 @@ const TrackExercise = ({ currentUser }) => {
 
         {state.exerciseType !== 'Swimming' && (
           <div className="form-field-group">
-            <Form.Label>Steps {state.exerciseType !== 'Swimming' ? '*' : ''}</Form.Label>
+            <Form.Label>{getCountFieldLabel(state.exerciseType)} *</Form.Label>
             <Form.Control
               id="steps"
-              aria-label="Number of steps"
+              aria-label={`Number of ${getCountFieldLabel(state.exerciseType).toLowerCase()}`}
               type="number"
               min="1"
-              placeholder="e.g., 6000"
+              placeholder={getCountFieldPlaceholder(state.exerciseType)}
               value={state.steps}
               onWheel={(e) => e.preventDefault()}
               onChange={(e) => { setState({ ...state, steps: e.target.value }); setWarning(''); }}
               className={getFieldValidationClass('steps', state.steps)}
             />
-            {submitted && !isValidNumber(state.steps) && <div className="invalid-feedback d-block">Please enter a valid number of steps greater than 0.</div>}
+            {submitted && !isValidNumber(state.steps) && (
+              <div className="invalid-feedback d-block">
+                Please enter a valid number of {getCountFieldLabel(state.exerciseType).toLowerCase()} greater than 0.
+              </div>
+            )}
           </div>
         )}
 

@@ -31,11 +31,19 @@ defineFeature(feature, test => {
           },
           {
             username: 'testuser',
-            exerciseType: 'Walking',
+            exerciseType: 'Gym',
             date: { $date: new Date('2024-01-02').toISOString() },
             duration: 20,
-            distance: 2,
-            steps: 3000
+            distance: 0,
+            steps: 60
+          },
+          {
+            username: 'testuser',
+            exerciseType: 'Cycling',
+            date: { $date: new Date('2024-01-03').toISOString() },
+            duration: 45,
+            distance: 12,
+            steps: 8
           }
         ]
       });
@@ -49,10 +57,13 @@ defineFeature(feature, test => {
 
     then('the feed lists the user\'s activity details', async () => {
       expect(await screen.findByText('Running')).toBeInTheDocument();
-      expect(screen.getByText('Walking')).toBeInTheDocument();
+      expect(screen.getByText('Gym')).toBeInTheDocument();
+      expect(screen.getByText('Cycling')).toBeInTheDocument();
       expect(screen.getByText('Duration: 30 min')).toBeInTheDocument();
       expect(screen.getByText('Distance: 5.00 km')).toBeInTheDocument();
       expect(screen.getByText('Steps: 6000')).toBeInTheDocument();
+      expect(screen.getByText('Reps: 60')).toBeInTheDocument();
+      expect(screen.getByText('Laps: 8')).toBeInTheDocument();
       expect(screen.getByText('Morning run')).toBeInTheDocument();
     });
   });

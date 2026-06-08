@@ -7,7 +7,7 @@ const goalSchema = new Schema(
     goalType: {
       type: String,
       required: true,
-      enum: ['Steps', 'Distance', 'Active Minutes']
+      enum: ['Steps', 'Reps', 'Laps', 'Distance', 'Active Minutes']
     },
     targetValue: {
       type: Number,

@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from './axiosInstance';
 import './statistics.css';
 
+const getActivityCountLabel = (exerciseType) => {
+  if (exerciseType === 'Gym') return 'Reps';
+  if (exerciseType === 'Cycling') return 'Laps';
+  return 'Steps';
+};
+
 const ActivityFeed = ({ currentUser }) => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +62,7 @@ const ActivityFeed = ({ currentUser }) => {
               <div className="activity-details">
                 <span>Duration: {item.duration ?? 0} min</span>
                 <span>Distance: {(item.distance ?? 0).toFixed(2)} km</span>
-                <span>Steps: {item.steps ?? 0}</span>
+                <span>{getActivityCountLabel(item.exerciseType)}: {item.steps ?? 0}</span>
               </div>
               {item.description && <div className="activity-description"><strong>Description:</strong> {item.description}</div>}
             </div>

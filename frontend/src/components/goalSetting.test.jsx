@@ -31,6 +31,26 @@ describe('GoalSetting progress from tracked activities', () => {
             targetDate: '2026-06-08T00:00:00.000Z',
             status: 'Active',
           },
+          {
+            _id: 'goal-2',
+            username: 'alex@example.com',
+            goalType: 'Reps',
+            targetValue: 5000,
+            period: 'Weekly',
+            startDate: '2026-06-01T00:00:00.000Z',
+            targetDate: '2026-06-08T00:00:00.000Z',
+            status: 'Active',
+          },
+          {
+            _id: 'goal-3',
+            username: 'alex@example.com',
+            goalType: 'Laps',
+            targetValue: 20,
+            period: 'Weekly',
+            startDate: '2026-06-01T00:00:00.000Z',
+            targetDate: '2026-06-08T00:00:00.000Z',
+            status: 'Active',
+          },
         ],
       },
     });
@@ -54,6 +74,14 @@ describe('GoalSetting progress from tracked activities', () => {
           date: '2026-06-06T10:00:00.000Z',
         },
         {
+          username: 'alex@example.com',
+          exerciseType: 'Cycling',
+          steps: 12,
+          distance: 8,
+          duration: 40,
+          date: '2026-06-07T10:00:00.000Z',
+        },
+        {
           username: 'other@example.com',
           exerciseType: 'Running',
           steps: 9000,
@@ -71,8 +99,12 @@ describe('GoalSetting progress from tracked activities', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText(/Progress: 6500 \/ 10000 steps/i)).toBeInTheDocument();
-      expect(screen.getByText('65%')).toBeInTheDocument();
+      expect(screen.getByText(/Progress: 4000 \/ 10000 steps/i)).toBeInTheDocument();
+      expect(screen.getByText(/Progress: 2500 \/ 5000 reps/i)).toBeInTheDocument();
+      expect(screen.getByText(/Progress: 12 \/ 20 laps/i)).toBeInTheDocument();
+      expect(screen.getByText('40%')).toBeInTheDocument();
+      expect(screen.getByText('50%')).toBeInTheDocument();
+      expect(screen.getByText('60%')).toBeInTheDocument();
     });
   });
 

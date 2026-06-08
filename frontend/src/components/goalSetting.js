@@ -5,6 +5,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import { addGoal, deleteGoal, getGoals, getTrackedActivities, updateGoal } from '../api';
 import './goalSetting.css';
 
+const GOAL_TYPE_OPTIONS = ['Steps', 'Reps', 'Laps', 'Distance', 'Active Minutes'];
+
 const getToday = () => {
   const today = new Date();
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
@@ -35,8 +37,23 @@ const parseDate = (dateValue) => {
 };
 
 const getActivityValueForGoal = (activity, goalType) => {
+  const exerciseType = activity.exerciseType;
+
   switch (goalType) {
     case 'Steps':
+      if (exerciseType === 'Gym' || exerciseType === 'Cycling') {
+        return 0;
+      }
+      return Number(activity.steps) || 0;
+    case 'Reps':
+      if (exerciseType !== 'Gym') {
+        return 0;
+      }
+      return Number(activity.steps) || 0;
+    case 'Laps':
+      if (exerciseType !== 'Cycling') {
+        return 0;
+      }
       return Number(activity.steps) || 0;
     case 'Distance':
       return Number(activity.distance) || 0;
@@ -51,6 +68,10 @@ const getGoalUnit = (goalType) => {
   switch (goalType) {
     case 'Steps':
       return 'steps';
+    case 'Reps':
+      return 'reps';
+    case 'Laps':
+      return 'laps';
     case 'Distance':
       return 'km';
     case 'Active Minutes':
@@ -68,6 +89,12 @@ const formatGoalValue = (value, goalType) => {
   return Math.round(Number(value) || 0).toString();
 };
 
+const getActivityCountLabel = (activity) => {
+  if (activity.exerciseType === 'Gym') return 'reps';
+  if (activity.exerciseType === 'Cycling') return 'laps';
+  return 'steps';
+};
+
 const getTrackedActivitySummary = (activity) => {
   if (!activity) return '';
 
@@ -81,7 +108,7 @@ const getTrackedActivitySummary = (activity) => {
   }
 
   if (Number(activity.steps) > 0) {
-    parts.push(`${Math.round(Number(activity.steps))} steps`);
+    parts.push(`${Math.round(Number(activity.steps))} ${getActivityCountLabel(activity)}`);
   }
 
   return parts.join(' • ');
@@ -360,9 +387,9 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
             onChange={(event) => setEditGoalForm({ ...editGoalForm, goalType: event.target.value })}
           >
             <option value="">Choose a goal</option>
-            <option value="Steps">Steps</option>
-            <option value="Distance">Distance</option>
-            <option value="Active Minutes">Active Minutes</option>
+            {GOAL_TYPE_OPTIONS.map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
           </Form.Control>
         </div>
 
@@ -563,9 +590,9 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
               className={!touched.goalType ? '' : goalType ? 'is-valid' : 'is-invalid'}
             >
               <option value="">Choose a goal</option>
-              <option value="Steps">Steps</option>
-              <option value="Distance">Distance</option>
-              <option value="Active Minutes">Active Minutes</option>
+              {GOAL_TYPE_OPTIONS.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
             </Form.Control>
             {touched.goalType && !goalType && (
               <div className="invalid-feedback d-block">Please select a goal type.</div>
