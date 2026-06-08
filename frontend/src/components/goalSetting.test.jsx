@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import GoalSetting from './goalSetting';
 import { getGoals, getTrackedActivities } from '../api';
@@ -138,7 +138,7 @@ describe('GoalSetting progress from tracked activities', () => {
     expect(screen.getByRole('button', { name: /Save Goal/i })).toBeInTheDocument();
   });
 
-  test('marks goals updated by the latest tracked activity', async () => {
+  test('marks only the selected goal when the latest activity matches multiple goals', async () => {
     const latestCyclingActivity = {
       username: 'alex@example.com',
       exerciseType: 'Cycling',
@@ -210,12 +210,21 @@ describe('GoalSetting progress from tracked activities', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByLabelText(/Active Minutes updated from latest activity/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Distance updated from latest activity/i)).toBeInTheDocument();
+    expect(await screen.findByRole('group', { name: /Choose the goal updated by this activity/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Active Minutes - 35 min/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Distance - 12.00 km/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Laps - 6 laps/i })).toBeInTheDocument();
+
+    expect(screen.queryByLabelText(/Active Minutes updated from latest activity/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Distance updated from latest activity/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Laps updated from latest activity/i)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Laps - 6 laps/i }));
+
     expect(screen.getByLabelText(/Laps updated from latest activity/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Active Minutes updated from latest activity/i)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/Distance updated from latest activity/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/Reps updated from latest activity/i)).not.toBeInTheDocument();
-    expect(screen.getByText(/Latest activity added 35 min/i)).toBeInTheDocument();
-    expect(screen.getByText(/Latest activity added 12.00 km/i)).toBeInTheDocument();
     expect(screen.getByText(/Latest activity added 6 laps/i)).toBeInTheDocument();
   });
 });
