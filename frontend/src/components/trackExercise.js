@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { trackExercise } from '../api';
+import { getGoals, trackExercise, updateGoal } from '../api';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import IconButton from '@material-ui/core/IconButton';
 import DirectionsRunIcon from '@material-ui/icons/DirectionsRun';
@@ -11,6 +11,24 @@ import FitnessCenterIcon from '@material-ui/icons/FitnessCenter';
 import OtherIcon from '@material-ui/icons/HelpOutline';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
+const getToday = () => {
+  const today = new Date();
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+  return today.toISOString().split('T')[0];
+};
+
+const formatDateForInput = (dateValue) => {
+  if (!dateValue) return getToday();
+  const parsedDate = new Date(dateValue.$date ?? dateValue);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return getToday();
+  }
+
+  parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+  return parsedDate.toISOString().split('T')[0];
+};
 
 const TrackExercise = ({ currentUser }) => {
   const navigate = useNavigate();
@@ -26,6 +44,19 @@ const TrackExercise = ({ currentUser }) => {
   const [warning, setWarning] = useState('');
   const [saved, setSaved] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showGoalUpdate, setShowGoalUpdate] = useState(false);
+  const [goals, setGoals] = useState([]);
+  const [selectedGoalId, setSelectedGoalId] = useState('');
+  const [goalUpdateForm, setGoalUpdateForm] = useState({
+    goalType: '',
+    targetValue: '',
+    period: 'Weekly',
+    targetDate: getToday(),
+  });
+  const [loadingGoals, setLoadingGoals] = useState(false);
+  const [updatingGoal, setUpdatingGoal] = useState(false);
+  const [goalMessage, setGoalMessage] = useState('');
+  const [goalWarning, setGoalWarning] = useState('');
 
   const isValidNumber = (value) => Number(value) > 0;
 
@@ -65,6 +96,224 @@ const TrackExercise = ({ currentUser }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const loadGoals = async () => {
+    if (!currentUser) return;
+
+    try {
+      setLoadingGoals(true);
+      setGoalWarning('');
+      const response = await getGoals(currentUser);
+      const savedGoals = response.data.goals || [];
+      setGoals(savedGoals);
+
+      if (savedGoals.length > 0 && !selectedGoalId) {
+        const firstGoal = savedGoals[0];
+        setSelectedGoalId(firstGoal._id);
+        setGoalUpdateForm({
+          goalType: firstGoal.goalType || '',
+          targetValue: firstGoal.targetValue?.toString() || '',
+          period: firstGoal.period || 'Weekly',
+          targetDate: formatDateForInput(firstGoal.targetDate),
+        });
+      }
+    } catch (error) {
+      console.error('There was an error loading goals!', error);
+      setGoalWarning('Unable to load your goals right now.');
+    } finally {
+      setLoadingGoals(false);
+    }
+  };
+
+  const openGoalUpdate = () => {
+    setShowGoalUpdate(true);
+    setGoalMessage('');
+    setGoalWarning('');
+    loadGoals();
+  };
+
+  const handleGoalSelection = (goalId) => {
+    const selectedGoal = goals.find((goal) => goal._id === goalId);
+    setSelectedGoalId(goalId);
+
+    if (selectedGoal) {
+      setGoalUpdateForm({
+        goalType: selectedGoal.goalType || '',
+        targetValue: selectedGoal.targetValue?.toString() || '',
+        period: selectedGoal.period || 'Weekly',
+        targetDate: formatDateForInput(selectedGoal.targetDate),
+      });
+    }
+  };
+
+  const isGoalUpdateValid = () => (
+    selectedGoalId
+    && goalUpdateForm.goalType
+    && Number(goalUpdateForm.targetValue) > 0
+    && goalUpdateForm.period
+    && goalUpdateForm.targetDate
+    && goalUpdateForm.targetDate >= getToday()
+  );
+
+  const submitGoalUpdate = async (goToGoalsPage = false) => {
+    if (!isGoalUpdateValid()) {
+      setGoalWarning('Please choose a goal and complete all goal fields before updating.');
+      setGoalMessage('');
+      return;
+    }
+
+    try {
+      setUpdatingGoal(true);
+      setGoalWarning('');
+      setGoalMessage('');
+      await updateGoal(selectedGoalId, {
+        goalType: goalUpdateForm.goalType,
+        targetValue: Number(goalUpdateForm.targetValue),
+        period: goalUpdateForm.period,
+        targetDate: goalUpdateForm.targetDate,
+      });
+
+      setGoalMessage('Goal updated successfully.');
+      setMessage('Goal updated successfully.');
+      setTimeout(() => setMessage(''), 2000);
+      await loadGoals();
+
+      if (goToGoalsPage) {
+        navigate('/goals?goalAction=update');
+      } else {
+        setShowGoalUpdate(false);
+      }
+    } catch (error) {
+      console.error('There was an error updating the goal!', error);
+      setGoalWarning('Unable to update this goal right now.');
+    } finally {
+      setUpdatingGoal(false);
+    }
+  };
+
+  const renderGoalUpdatePanel = () => {
+    if (!showGoalUpdate) return null;
+
+    return (
+      <section style={{
+        background: 'var(--card-bg)',
+        border: '1px solid rgba(31, 114, 255, 0.16)',
+        borderRadius: 8,
+        marginTop: 20,
+        padding: 16,
+        textAlign: 'left',
+      }}>
+        <h4 style={{ color: 'var(--text)', marginBottom: 16, textAlign: 'center' }}>
+          Update Existing Goal
+        </h4>
+
+        {loadingGoals ? (
+          <div className="goal-loading">Loading goals...</div>
+        ) : goals.length === 0 ? (
+          <div style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+            No goals found. Create a goal first.
+            <div style={{ marginTop: 12 }}>
+              <Button variant="success" onClick={() => navigate('/goals?goalAction=create')}>
+                Create Goal
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="form-field-group">
+              <Form.Label>Choose Goal</Form.Label>
+              <Form.Control
+                as="select"
+                value={selectedGoalId}
+                onChange={(event) => handleGoalSelection(event.target.value)}
+              >
+                {goals.map((goal) => (
+                  <option key={goal._id} value={goal._id}>
+                    {goal.goalType} - {goal.targetValue} {goal.period}
+                  </option>
+                ))}
+              </Form.Control>
+            </div>
+
+            <div className="form-field-group">
+              <Form.Label>Goal Type</Form.Label>
+              <Form.Control
+                as="select"
+                value={goalUpdateForm.goalType}
+                onChange={(event) => setGoalUpdateForm({ ...goalUpdateForm, goalType: event.target.value })}
+              >
+                <option value="">Choose a goal</option>
+                <option value="Steps">Steps</option>
+                <option value="Distance">Distance</option>
+                <option value="Active Minutes">Active Minutes</option>
+              </Form.Control>
+            </div>
+
+            <div className="form-field-group">
+              <Form.Label>Target Value</Form.Label>
+              <Form.Control
+                type="number"
+                min="1"
+                step="any"
+                value={goalUpdateForm.targetValue}
+                onChange={(event) => setGoalUpdateForm({ ...goalUpdateForm, targetValue: event.target.value })}
+              />
+            </div>
+
+            <div className="form-field-group">
+              <Form.Label>Goal Period</Form.Label>
+              <Form.Control
+                as="select"
+                value={goalUpdateForm.period}
+                onChange={(event) => setGoalUpdateForm({ ...goalUpdateForm, period: event.target.value })}
+              >
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+              </Form.Control>
+            </div>
+
+            <div className="form-field-group">
+              <Form.Label>Target Date</Form.Label>
+              <Form.Control
+                type="date"
+                min={getToday()}
+                value={goalUpdateForm.targetDate}
+                onChange={(event) => setGoalUpdateForm({ ...goalUpdateForm, targetDate: event.target.value })}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap', marginTop: 16 }}>
+              <Button
+                variant="primary"
+                disabled={updatingGoal}
+                onClick={() => submitGoalUpdate(false)}
+              >
+                {updatingGoal ? 'Updating...' : 'Update and Close'}
+              </Button>
+              <Button
+                variant="success"
+                disabled={updatingGoal}
+                onClick={() => submitGoalUpdate(true)}
+              >
+                {updatingGoal ? 'Updating...' : 'Update and Go to Goals'}
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={updatingGoal}
+                onClick={() => setShowGoalUpdate(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </>
+        )}
+
+        {goalWarning && <div className="warning-message">{goalWarning}</div>}
+        {goalMessage && <div className="success-message">{goalMessage}</div>}
+      </section>
+    );
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -113,14 +362,21 @@ const TrackExercise = ({ currentUser }) => {
       <div style={{ maxWidth: '600px', margin: 'auto', textAlign: 'center', padding: '40px' }}>
         <h3>Activity Saved!</h3>
         <p>Your activity has been saved successfully.</p>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', marginTop: '24px', flexWrap: 'wrap' }}>
           <Button variant="secondary" onClick={() => { setSaved(false); setSubmitted(false); }}>
             Add another activity
           </Button>
           <Button variant="primary" onClick={() => navigate('/fitness')}>
             View Activities Summary
           </Button>
+          <Button variant="success" onClick={() => navigate('/goals?goalAction=create')}>
+            Create Goal
+          </Button>
+          <Button variant="outline-primary" onClick={openGoalUpdate}>
+            Update Goal
+          </Button>
         </div>
+        {renderGoalUpdatePanel()}
       </div>
     );
   }
@@ -128,6 +384,27 @@ const TrackExercise = ({ currentUser }) => {
   return (
     <div className="track-form-container">
       <h3>Track Your Activity</h3>
+      <div style={{
+        background: 'var(--card-bg)',
+        border: '1px solid rgba(31, 114, 255, 0.16)',
+        borderRadius: 8,
+        marginBottom: 24,
+        padding: 16,
+        textAlign: 'center',
+      }}>
+        <div style={{ color: 'var(--text)', fontWeight: 600, marginBottom: 12 }}>
+          Manage goals alongside your activity
+        </div>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Button variant="success" onClick={() => navigate('/goals?goalAction=create')}>
+            Create Goal
+          </Button>
+          <Button variant="outline-primary" onClick={openGoalUpdate}>
+            Update Goal
+          </Button>
+        </div>
+      </div>
+      {renderGoalUpdatePanel()}
       <Form onSubmit={onSubmit}>
         <fieldset className="form-field-group">
           <legend className="form-label">Activity Type *</legend>
