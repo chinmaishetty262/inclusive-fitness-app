@@ -75,4 +75,34 @@ describe('GoalSetting progress from tracked activities', () => {
       expect(screen.getByText('65%')).toBeInTheDocument();
     });
   });
+
+  test('hides the create goal form unless create mode is requested', async () => {
+    getGoals.mockResolvedValue({ data: { goals: [] } });
+    getTrackedActivities.mockResolvedValue({ data: [] });
+
+    render(
+      <MemoryRouter>
+        <GoalSetting currentUser="alex@example.com" onChangePreferences={jest.fn()} />
+      </MemoryRouter>
+    );
+
+    await screen.findByText(/No goals saved yet/i);
+
+    expect(screen.queryByText(/Goal Type \*/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Save Goal/i })).not.toBeInTheDocument();
+  });
+
+  test('shows the create goal form in create mode', async () => {
+    getGoals.mockResolvedValue({ data: { goals: [] } });
+    getTrackedActivities.mockResolvedValue({ data: [] });
+
+    render(
+      <MemoryRouter initialEntries={['/goals?goalAction=create']}>
+        <GoalSetting currentUser="alex@example.com" onChangePreferences={jest.fn()} />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/Goal Type \*/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Save Goal/i })).toBeInTheDocument();
+  });
 });

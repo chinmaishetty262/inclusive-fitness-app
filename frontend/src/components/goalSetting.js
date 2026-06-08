@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
+import EditIcon from '@material-ui/icons/Edit';
 import { addGoal, deleteGoal, getGoals, getTrackedActivities, updateGoal } from '../api';
 import './goalSetting.css';
 
@@ -13,6 +14,17 @@ const getToday = () => {
 const formatDate = (dateValue) => {
   if (!dateValue) return 'No date set';
   return new Date(dateValue).toLocaleDateString();
+};
+
+const formatDateForInput = (dateValue) => {
+  const parsedDate = parseDate(dateValue);
+
+  if (!parsedDate) {
+    return getToday();
+  }
+
+  parsedDate.setMinutes(parsedDate.getMinutes() - parsedDate.getTimezoneOffset());
+  return parsedDate.toISOString().split('T')[0];
 };
 
 const parseDate = (dateValue) => {
@@ -77,6 +89,8 @@ const getTrackedActivitySummary = (activity) => {
 
 const GoalSetting = ({ currentUser, onChangePreferences }) => {
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const showCreateGoalForm = searchParams.get('goalAction') === 'create';
   const trackedActivity = location.state?.trackedActivity;
   const [profile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
   const [goalType, setGoalType] = useState('');
@@ -90,6 +104,14 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
   const [saving, setSaving] = useState(false);
   const [deletingGoalId, setDeletingGoalId] = useState('');
   const [updatingGoalId, setUpdatingGoalId] = useState('');
+  const [editingGoalId, setEditingGoalId] = useState('');
+  const [editGoalForm, setEditGoalForm] = useState({
+    goalType: '',
+    targetValue: '',
+    period: 'Weekly',
+    targetDate: getToday(),
+  });
+  const [savingGoalEditId, setSavingGoalEditId] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [touched, setTouched] = useState({});
@@ -262,9 +284,141 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     }
   };
 
+  const handleEditClick = (goal) => {
+    setEditingGoalId(goal._id);
+    setError('');
+    setSuccessMessage('');
+    setEditGoalForm({
+      goalType: goal.goalType || '',
+      targetValue: goal.targetValue?.toString() || '',
+      period: goal.period || 'Weekly',
+      targetDate: formatDateForInput(goal.targetDate),
+    });
+  };
+
+  const isEditFormValid = () => (
+    editGoalForm.goalType !== ''
+    && Number(editGoalForm.targetValue) > 0
+    && editGoalForm.period !== ''
+    && editGoalForm.targetDate !== ''
+    && editGoalForm.targetDate >= getToday()
+  );
+
+  const handleGoalEditSave = async (goalId) => {
+    if (!isEditFormValid()) {
+      setError('Please complete all edited goal fields with a future target date and a target greater than 0.');
+      setSuccessMessage('');
+      return;
+    }
+
+    try {
+      setSavingGoalEditId(goalId);
+      setError('');
+      setSuccessMessage('');
+      const response = await updateGoal(goalId, {
+        goalType: editGoalForm.goalType,
+        targetValue: Number(editGoalForm.targetValue),
+        period: editGoalForm.period,
+        targetDate: editGoalForm.targetDate,
+      });
+
+      setGoals((currentGoals) => (
+        currentGoals.map((currentGoal) => (
+          currentGoal._id === goalId ? response.data.goal : currentGoal
+        ))
+      ));
+      setEditingGoalId('');
+      setSuccessMessage('Goal updated successfully.');
+      await loadActivities();
+    } catch (err) {
+      console.error('Failed to edit goal:', err);
+      setError('Unable to update this goal right now. Please try again.');
+    } finally {
+      setSavingGoalEditId('');
+    }
+  };
+
   const getStatusButtonText = (goal) => {
     if (updatingGoalId === goal._id) return 'Updating...';
     return goal.status === 'Completed' ? 'Reopen Goal' : 'Mark Complete';
+  };
+
+  const renderGoalEditPanel = (goal) => {
+    if (editingGoalId !== goal._id) {
+      return null;
+    }
+
+    return (
+      <div className="goal-edit-panel">
+        <h5>Edit Goal</h5>
+
+        <div className="form-field-group">
+          <Form.Label>Goal Type</Form.Label>
+          <Form.Control
+            as="select"
+            value={editGoalForm.goalType}
+            onChange={(event) => setEditGoalForm({ ...editGoalForm, goalType: event.target.value })}
+          >
+            <option value="">Choose a goal</option>
+            <option value="Steps">Steps</option>
+            <option value="Distance">Distance</option>
+            <option value="Active Minutes">Active Minutes</option>
+          </Form.Control>
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Target Value</Form.Label>
+          <Form.Control
+            type="number"
+            min="1"
+            step="any"
+            value={editGoalForm.targetValue}
+            onWheel={(event) => event.preventDefault()}
+            onChange={(event) => setEditGoalForm({ ...editGoalForm, targetValue: event.target.value })}
+          />
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Goal Period</Form.Label>
+          <Form.Control
+            as="select"
+            value={editGoalForm.period}
+            onChange={(event) => setEditGoalForm({ ...editGoalForm, period: event.target.value })}
+          >
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </Form.Control>
+        </div>
+
+        <div className="form-field-group">
+          <Form.Label>Target Date</Form.Label>
+          <Form.Control
+            type="date"
+            min={getToday()}
+            value={editGoalForm.targetDate}
+            onChange={(event) => setEditGoalForm({ ...editGoalForm, targetDate: event.target.value })}
+          />
+        </div>
+
+        <div className="goal-edit-actions">
+          <Button
+            variant="primary"
+            disabled={savingGoalEditId === goal._id}
+            onClick={() => handleGoalEditSave(goal._id)}
+          >
+            {savingGoalEditId === goal._id ? 'Saving...' : 'Save Changes'}
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={savingGoalEditId === goal._id}
+            onClick={() => setEditingGoalId('')}
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
   };
 
   const renderSavedGoals = () => (
@@ -278,7 +432,18 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
             <div key={goal._id} className="goal-list-item">
               <div className="goal-list-header">
                 <strong>{goal.goalType}</strong>
-                <span className="goal-status">{goal.status}</span>
+                <div className="goal-header-actions">
+                  <span className="goal-status">{goal.status}</span>
+                  <button
+                    type="button"
+                    aria-label={`Edit ${goal.goalType} goal`}
+                    className="goal-edit-icon-button"
+                    onClick={() => handleEditClick(goal)}
+                    title="Edit goal"
+                  >
+                    <EditIcon fontSize="small" />
+                  </button>
+                </div>
               </div>
               <div className="goal-detail">Target: {goal.targetValue}</div>
               <div className="goal-detail">Period: {goal.period}</div>
@@ -327,6 +492,7 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
                   {deletingGoalId === goal._id ? 'Deleting...' : 'Delete Goal'}
                 </Button>
               </div>
+              {renderGoalEditPanel(goal)}
             </div>
           ))}
         </div>
@@ -382,97 +548,99 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
 
       {renderSavedGoals()}
 
-      <Form onSubmit={handleSubmit}>
-        <div className="form-field-group">
-          <Form.Label>Goal Type *</Form.Label>
-          <Form.Control
-            as="select"
-            value={goalType}
-            onChange={(event) => {
-              setGoalType(event.target.value);
-              setError('');
-              setTouched(t => ({ ...t, goalType: true }));
-            }}
-            className={!touched.goalType ? '' : goalType ? 'is-valid' : 'is-invalid'}
-          >
-            <option value="">Choose a goal</option>
-            <option value="Steps">Steps</option>
-            <option value="Distance">Distance</option>
-            <option value="Active Minutes">Active Minutes</option>
-          </Form.Control>
-          {touched.goalType && !goalType && (
-            <div className="invalid-feedback d-block">Please select a goal type.</div>
-          )}
-        </div>
+      {showCreateGoalForm && (
+        <Form onSubmit={handleSubmit}>
+          <div className="form-field-group">
+            <Form.Label>Goal Type *</Form.Label>
+            <Form.Control
+              as="select"
+              value={goalType}
+              onChange={(event) => {
+                setGoalType(event.target.value);
+                setError('');
+                setTouched(t => ({ ...t, goalType: true }));
+              }}
+              className={!touched.goalType ? '' : goalType ? 'is-valid' : 'is-invalid'}
+            >
+              <option value="">Choose a goal</option>
+              <option value="Steps">Steps</option>
+              <option value="Distance">Distance</option>
+              <option value="Active Minutes">Active Minutes</option>
+            </Form.Control>
+            {touched.goalType && !goalType && (
+              <div className="invalid-feedback d-block">Please select a goal type.</div>
+            )}
+          </div>
 
-        <div className="form-field-group">
-          <Form.Label>Target Value *</Form.Label>
-          <Form.Control
-            type="number"
-            min="1"
-            step="any"
-            placeholder="e.g., 50000"
-            value={targetValue}
-            onWheel={(event) => event.preventDefault()}
-            onChange={(event) => {
-              setTargetValue(event.target.value);
-              setError('');
-              setTouched(t => ({ ...t, targetValue: true }));
-            }}
-            className={!touched.targetValue ? '' : Number(targetValue) > 0 ? 'is-valid' : 'is-invalid'}
-          />
-          {touched.targetValue && Number(targetValue) <= 0 && (
-            <div className="invalid-feedback d-block">Please enter a target greater than 0.</div>
-          )}
-        </div>
+          <div className="form-field-group">
+            <Form.Label>Target Value *</Form.Label>
+            <Form.Control
+              type="number"
+              min="1"
+              step="any"
+              placeholder="e.g., 50000"
+              value={targetValue}
+              onWheel={(event) => event.preventDefault()}
+              onChange={(event) => {
+                setTargetValue(event.target.value);
+                setError('');
+                setTouched(t => ({ ...t, targetValue: true }));
+              }}
+              className={!touched.targetValue ? '' : Number(targetValue) > 0 ? 'is-valid' : 'is-invalid'}
+            />
+            {touched.targetValue && Number(targetValue) <= 0 && (
+              <div className="invalid-feedback d-block">Please enter a target greater than 0.</div>
+            )}
+          </div>
 
-        <div className="form-field-group">
-          <Form.Label>Goal Period *</Form.Label>
-          <Form.Control
-            as="select"
-            value={period}
-            onChange={(event) => {
-              setPeriod(event.target.value);
-              setError('');
-            }}
-            className={period ? 'is-valid' : 'is-invalid'}
-          >
-            <option value="Daily">Daily</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Monthly">Monthly</option>
-          </Form.Control>
-        </div>
+          <div className="form-field-group">
+            <Form.Label>Goal Period *</Form.Label>
+            <Form.Control
+              as="select"
+              value={period}
+              onChange={(event) => {
+                setPeriod(event.target.value);
+                setError('');
+              }}
+              className={period ? 'is-valid' : 'is-invalid'}
+            >
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+            </Form.Control>
+          </div>
 
-        <div className="form-field-group">
-          <Form.Label>Target Date *</Form.Label>
-          <Form.Control
-            type="date"
-            min={getToday()}
-            value={targetDate}
-            onChange={(event) => {
-              setTargetDate(event.target.value);
-              setError('');
-              setTouched(t => ({ ...t, targetDate: true }));
-            }}
-            className={!touched.targetDate ? 'is-valid' : targetDate >= getToday() ? 'is-valid' : 'is-invalid'}
-            style={{ paddingRight: '40px' }}
-          />
-          {touched.targetDate && targetDate < getToday() && (
-            <div className="invalid-feedback d-block">Please choose today or a future date.</div>
-          )}
-        </div>
+          <div className="form-field-group">
+            <Form.Label>Target Date *</Form.Label>
+            <Form.Control
+              type="date"
+              min={getToday()}
+              value={targetDate}
+              onChange={(event) => {
+                setTargetDate(event.target.value);
+                setError('');
+                setTouched(t => ({ ...t, targetDate: true }));
+              }}
+              className={!touched.targetDate ? 'is-valid' : targetDate >= getToday() ? 'is-valid' : 'is-invalid'}
+              style={{ paddingRight: '40px' }}
+            />
+            {touched.targetDate && targetDate < getToday() && (
+              <div className="invalid-feedback d-block">Please choose today or a future date.</div>
+            )}
+          </div>
 
-        <div className="submit-button-container">
-          <Button
-            variant="success"
-            type="submit"
-            disabled={saving}
-            style={{ cursor: saving ? 'not-allowed' : 'pointer' }}
-          >
-            {saving ? 'Saving...' : 'Save Goal'}
-          </Button>
-        </div>
-      </Form>
+          <div className="submit-button-container">
+            <Button
+              variant="success"
+              type="submit"
+              disabled={saving}
+              style={{ cursor: saving ? 'not-allowed' : 'pointer' }}
+            >
+              {saving ? 'Saving...' : 'Save Goal'}
+            </Button>
+          </div>
+        </Form>
+      )}
 
       {error && <div className="warning-message">{error}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
