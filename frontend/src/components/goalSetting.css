@@ -144,53 +144,6 @@
   text-align: center;
 }
 
-.latest-goal-picker {
-  background: var(--card-bg);
-  border: 1px solid rgba(31, 114, 255, 0.16);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(18, 33, 60, 0.08);
-  margin-bottom: 20px;
-  padding: 14px;
-}
-
-.latest-goal-picker-title {
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.latest-goal-options {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.latest-goal-option {
-  background: var(--muted-bg);
-  border: 1px solid rgba(31, 114, 255, 0.18);
-  border-radius: 8px;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 9px 10px;
-  text-align: left;
-}
-
-.latest-goal-option:hover,
-.latest-goal-option:focus {
-  border-color: rgba(31, 114, 255, 0.45);
-  outline: 2px solid rgba(31, 114, 255, 0.16);
-}
-
-.latest-goal-option--selected {
-  background: rgba(25, 135, 84, 0.1);
-  border-color: rgba(25, 135, 84, 0.5);
-  color: #198754;
-}
-
 .goal-progress {
   margin-top: 14px;
 }
@@ -254,8 +207,7 @@
 
 [data-theme="high-contrast"] .goal-setting-container,
 [data-theme="high-contrast"] .saved-goals-section,
-[data-theme="high-contrast"] .latest-activity-update,
-[data-theme="high-contrast"] .latest-goal-picker {
+[data-theme="high-contrast"] .latest-activity-update {
   background: var(--bg) !important;
   color: var(--text) !important;
 }
@@ -277,16 +229,9 @@
 }
 
 [data-theme="high-contrast"] .goal-updated-badge,
-[data-theme="high-contrast"] .goal-progress-note--updated,
-[data-theme="high-contrast"] .latest-goal-option--selected {
+[data-theme="high-contrast"] .goal-progress-note--updated {
   background: var(--muted-bg) !important;
   border-color: var(--accent-highlight) !important;
-  color: var(--text) !important;
-}
-
-[data-theme="high-contrast"] .latest-goal-option {
-  background: var(--card-bg) !important;
-  border: 2px solid var(--border) !important;
   color: var(--text) !important;
 }
 

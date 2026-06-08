@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -80,14 +80,6 @@ const getGoalUnit = (goalType) => {
     default:
       return '';
   }
-};
-
-const formatUnitForValue = (value, unit) => {
-  if (Math.abs(Number(value)) === 1 && unit.endsWith('s')) {
-    return unit.slice(0, -1);
-  }
-
-  return unit;
 };
 
 const formatGoalValue = (value, goalType) => {
@@ -174,7 +166,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     targetDate: getToday(),
   });
   const [savingGoalEditId, setSavingGoalEditId] = useState('');
-  const [selectedLatestGoalId, setSelectedLatestGoalId] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [touched, setTouched] = useState({});
@@ -265,7 +256,7 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     };
   };
 
-  const getLatestActivityGoalUpdate = useCallback((goal) => {
+  const getLatestActivityGoalUpdate = (goal) => {
     if (!trackedActivity || !isActivityInGoalDateRange(trackedActivity, goal)) {
       return null;
     }
@@ -280,61 +271,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
       value,
       unit: getGoalUnit(goal.goalType),
     };
-  }, [trackedActivity]);
-
-  const latestActivityGoalOptions = useMemo(() => (
-    trackedActivity
-      ? goals
-        .map((goal) => ({
-          goal,
-          update: getLatestActivityGoalUpdate(goal),
-        }))
-        .filter(({ update }) => update)
-      : []
-  ), [getLatestActivityGoalUpdate, goals, trackedActivity]);
-
-  useEffect(() => {
-    if (!trackedActivity) {
-      setSelectedLatestGoalId('');
-      return;
-    }
-
-    setSelectedLatestGoalId((currentGoalId) => {
-      if (currentGoalId && latestActivityGoalOptions.some(({ goal }) => goal._id === currentGoalId)) {
-        return currentGoalId;
-      }
-
-      return latestActivityGoalOptions.length === 1 ? latestActivityGoalOptions[0].goal._id : '';
-    });
-  }, [trackedActivity, latestActivityGoalOptions]);
-
-  const getGoalChoiceLabel = ({ goal, update }) => (
-    `${goal.goalType} - ${formatGoalValue(update.value, goal.goalType)} ${formatUnitForValue(update.value, update.unit)} (${goal.targetValue} ${goal.period})`
-  );
-
-  const renderLatestActivityGoalPicker = () => {
-    if (!trackedActivity || latestActivityGoalOptions.length <= 1) {
-      return null;
-    }
-
-    return (
-      <div className="latest-goal-picker" role="group" aria-label="Choose the goal updated by this activity">
-        <div className="latest-goal-picker-title">Choose updated goal</div>
-        <div className="latest-goal-options">
-          {latestActivityGoalOptions.map((option) => (
-            <button
-              key={option.goal._id}
-              type="button"
-              className={`latest-goal-option ${selectedLatestGoalId === option.goal._id ? 'latest-goal-option--selected' : ''}`}
-              aria-pressed={selectedLatestGoalId === option.goal._id}
-              onClick={() => setSelectedLatestGoalId(option.goal._id)}
-            >
-              {getGoalChoiceLabel(option)}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   const resetForm = () => {
@@ -566,10 +502,10 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
           {goals.map((goal) => (
             <div
               key={goal._id}
-              className={`goal-list-item ${selectedLatestGoalId === goal._id ? 'goal-list-item--updated' : ''}`}
+              className={`goal-list-item ${getLatestActivityGoalUpdate(goal) ? 'goal-list-item--updated' : ''}`}
             >
               {(() => {
-                const latestUpdate = selectedLatestGoalId === goal._id ? getLatestActivityGoalUpdate(goal) : null;
+                const latestUpdate = getLatestActivityGoalUpdate(goal);
 
                 return (
                   <>
@@ -623,7 +559,7 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
                       <div className="goal-progress-note">Calculating progress from tracked activities...</div>
                     ) : latestUpdate ? (
                       <div className="goal-progress-note goal-progress-note--updated">
-                        Latest activity added {formatGoalValue(latestUpdate.value, goal.goalType)} {formatUnitForValue(latestUpdate.value, latestUpdate.unit)}.
+                        Latest activity added {formatGoalValue(latestUpdate.value, goal.goalType)} {latestUpdate.unit}.
                       </div>
                     ) : progress.isReached ? (
                       <div className="goal-progress-note goal-progress-note--success">Target reached from tracked activities.</div>
@@ -705,8 +641,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
           {getTrackedActivitySummary(trackedActivity)}
         </div>
       )}
-
-      {renderLatestActivityGoalPicker()}
 
       {renderSavedGoals()}
 
