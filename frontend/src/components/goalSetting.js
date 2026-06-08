@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { addGoal, deleteGoal, getGoals, updateGoal } from '../api';
+import { addGoal, deleteGoal, getGoals, getTrackedActivities, updateGoal } from '../api';
 import './goalSetting.css';
 
 const getToday = () => {
@@ -14,6 +14,47 @@ const formatDate = (dateValue) => {
   return new Date(dateValue).toLocaleDateString();
 };
 
+const parseDate = (dateValue) => {
+  if (!dateValue) return null;
+  const rawDate = dateValue.$date ?? dateValue;
+  const parsedDate = new Date(rawDate);
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
+const getActivityValueForGoal = (activity, goalType) => {
+  switch (goalType) {
+    case 'Steps':
+      return Number(activity.steps) || 0;
+    case 'Distance':
+      return Number(activity.distance) || 0;
+    case 'Active Minutes':
+      return Number(activity.duration) || 0;
+    default:
+      return 0;
+  }
+};
+
+const getGoalUnit = (goalType) => {
+  switch (goalType) {
+    case 'Steps':
+      return 'steps';
+    case 'Distance':
+      return 'km';
+    case 'Active Minutes':
+      return 'min';
+    default:
+      return '';
+  }
+};
+
+const formatGoalValue = (value, goalType) => {
+  if (goalType === 'Distance') {
+    return Number(value).toFixed(2);
+  }
+
+  return Math.round(Number(value) || 0).toString();
+};
+
 const GoalSetting = ({ currentUser, onChangePreferences }) => {
   const [profile] = useState(JSON.parse(localStorage.getItem('userProfile') || '{}'));
   const [goalType, setGoalType] = useState('');
@@ -21,7 +62,9 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
   const [period, setPeriod] = useState('Weekly');
   const [targetDate, setTargetDate] = useState(getToday());
   const [goals, setGoals] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [loadingGoals, setLoadingGoals] = useState(false);
+  const [loadingActivities, setLoadingActivities] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingGoalId, setDeletingGoalId] = useState('');
   const [updatingGoalId, setUpdatingGoalId] = useState('');
@@ -52,9 +95,62 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     }
   }, [currentUser]);
 
+  const loadActivities = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+      setLoadingActivities(true);
+      const response = await getTrackedActivities();
+      const trackedActivities = Array.isArray(response.data) ? response.data : [];
+      setActivities(trackedActivities.filter((activity) => activity.username === currentUser));
+    } catch (err) {
+      console.error('Failed to load tracked activities:', err);
+      setError('Goals loaded, but activity progress could not be calculated right now.');
+    } finally {
+      setLoadingActivities(false);
+    }
+  }, [currentUser]);
+
   useEffect(() => {
     loadGoals();
-  }, [loadGoals]);
+    loadActivities();
+  }, [loadGoals, loadActivities]);
+
+  const getGoalProgress = (goal) => {
+    const startDate = parseDate(goal.startDate);
+    const endDate = parseDate(goal.targetDate);
+    const target = Number(goal.targetValue) || 0;
+
+    const currentValue = activities.reduce((sum, activity) => {
+      const activityDate = parseDate(activity.date);
+
+      if (!activityDate) {
+        return sum;
+      }
+
+      if (startDate && activityDate < startDate) {
+        return sum;
+      }
+
+      if (endDate) {
+        const endOfTargetDay = new Date(endDate);
+        endOfTargetDay.setHours(23, 59, 59, 999);
+
+        if (activityDate > endOfTargetDay) {
+          return sum;
+        }
+      }
+
+      return sum + getActivityValueForGoal(activity, goal.goalType);
+    }, 0);
+
+    const percentage = target > 0 ? Math.min((currentValue / target) * 100, 100) : 0;
+
+    return {
+      currentValue,
+      percentage,
+      isReached: target > 0 && currentValue >= target,
+    };
+  };
 
   const resetForm = () => {
     setGoalType('');
@@ -92,6 +188,7 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
       setSuccessMessage('Goal saved successfully!');
       resetForm();
       await loadGoals();
+      await loadActivities();
     } catch (err) {
       console.error('Failed to save goal:', err);
       setError('Unable to save your goal right now. Please try again.');
@@ -290,6 +387,34 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
                 <div className="goal-detail">Target: {goal.targetValue}</div>
                 <div className="goal-detail">Period: {goal.period}</div>
                 <div className="goal-detail">Target date: {formatDate(goal.targetDate)}</div>
+                {(() => {
+                  const progress = getGoalProgress(goal);
+                  const unit = getGoalUnit(goal.goalType);
+
+                  return (
+                    <div className="goal-progress" aria-label={`${goal.goalType} progress`}>
+                      <div className="goal-progress-summary">
+                        <span>
+                          Progress: {formatGoalValue(progress.currentValue, goal.goalType)} / {formatGoalValue(goal.targetValue, goal.goalType)} {unit}
+                        </span>
+                        <span>{Math.round(progress.percentage)}%</span>
+                      </div>
+                      <div className="goal-progress-track" aria-hidden="true">
+                        <div
+                          className="goal-progress-fill"
+                          style={{ width: `${progress.percentage}%` }}
+                        />
+                      </div>
+                      {loadingActivities ? (
+                        <div className="goal-progress-note">Calculating progress from tracked activities...</div>
+                      ) : progress.isReached ? (
+                        <div className="goal-progress-note goal-progress-note--success">Target reached from tracked activities.</div>
+                      ) : (
+                        <div className="goal-progress-note">Progress updates when matching activities are tracked.</div>
+                      )}
+                    </div>
+                  );
+                })()}
                 <div className="goal-actions">
                   <Button
                     variant={goal.status === 'Completed' ? 'primary' : 'success'}
