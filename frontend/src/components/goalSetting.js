@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import EditIcon from '@material-ui/icons/Edit';
@@ -34,6 +34,20 @@ const parseDate = (dateValue) => {
   const rawDate = dateValue.$date ?? dateValue;
   const parsedDate = new Date(rawDate);
   return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+};
+
+const getActivitySignature = (activity) => {
+  const activityDate = parseDate(activity.date);
+
+  return [
+    activity.username,
+    activity.exerciseType,
+    activity.description || '',
+    Number(activity.duration) || 0,
+    Number(activity.distance) || 0,
+    Number(activity.steps) || 0,
+    activityDate ? activityDate.getTime() : '',
+  ].join('|');
 };
 
 const getActivityValueForGoal = (activity, goalType) => {
@@ -192,12 +206,25 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
     }
   }, [trackedActivity]);
 
+  const progressActivities = useMemo(() => {
+    if (!trackedActivity || trackedActivity.username !== currentUser) {
+      return activities;
+    }
+
+    const trackedActivitySignature = getActivitySignature(trackedActivity);
+    const isAlreadyLoaded = activities.some((activity) => (
+      getActivitySignature(activity) === trackedActivitySignature
+    ));
+
+    return isAlreadyLoaded ? activities : [...activities, trackedActivity];
+  }, [activities, currentUser, trackedActivity]);
+
   const getGoalProgress = (goal) => {
     const startDate = parseDate(goal.startDate);
     const endDate = parseDate(goal.targetDate);
     const target = Number(goal.targetValue) || 0;
 
-    const currentValue = activities.reduce((sum, activity) => {
+    const currentValue = progressActivities.reduce((sum, activity) => {
       const activityDate = parseDate(activity.date);
 
       if (!activityDate) {

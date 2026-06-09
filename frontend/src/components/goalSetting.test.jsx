@@ -137,4 +137,67 @@ describe('GoalSetting progress from tracked activities', () => {
     expect(await screen.findByText(/Goal Type \*/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Save Goal/i })).toBeInTheDocument();
   });
+
+  test('includes the latest tracked activity in goal progress before it is returned by the API', async () => {
+    const latestActivity = {
+      username: 'alex@example.com',
+      exerciseType: 'Running',
+      description: 'Morning run',
+      duration: 30,
+      distance: 5,
+      steps: 4000,
+      date: '2026-06-09T09:00:00.000Z',
+    };
+
+    getGoals.mockResolvedValue({
+      data: {
+        goals: [
+          {
+            _id: 'goal-steps',
+            username: 'alex@example.com',
+            goalType: 'Steps',
+            targetValue: 5000,
+            period: 'Weekly',
+            startDate: '2026-06-01T00:00:00.000Z',
+            targetDate: '2026-06-10T00:00:00.000Z',
+            status: 'Active',
+          },
+        ],
+      },
+    });
+
+    getTrackedActivities.mockResolvedValue({
+      data: [
+        {
+          username: 'alex@example.com',
+          exerciseType: 'Running',
+          duration: 10,
+          distance: 1,
+          steps: 99,
+          date: '2026-06-02T09:00:00.000Z',
+        },
+      ],
+    });
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: '/goals',
+            search: '?goalAction=update',
+            state: { trackedActivity: latestActivity },
+          },
+        ]}
+      >
+        <GoalSetting currentUser="alex@example.com" onChangePreferences={jest.fn()} />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/Running saved/i)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Progress: 4099 \/ 5000 steps/i)).toBeInTheDocument();
+      expect(screen.getByText('82%')).toBeInTheDocument();
+    });
+  });
 });
