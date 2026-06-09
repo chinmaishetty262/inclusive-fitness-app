@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import { addGoal, deleteGoal, getGoals, getTrackedActivities, updateGoal } from '../api';
 import './goalSetting.css';
@@ -113,32 +112,6 @@ const getTrackedActivitySummary = (activity) => {
   }
 
   return parts.join(' • ');
-};
-
-const isActivityInGoalDateRange = (activity, goal) => {
-  const activityDate = parseDate(activity?.date);
-
-  if (!activityDate) {
-    return false;
-  }
-
-  const startDate = parseDate(goal.startDate);
-  const endDate = parseDate(goal.targetDate);
-
-  if (startDate && activityDate < startDate) {
-    return false;
-  }
-
-  if (endDate) {
-    const endOfTargetDay = new Date(endDate);
-    endOfTargetDay.setHours(23, 59, 59, 999);
-
-    if (activityDate > endOfTargetDay) {
-      return false;
-    }
-  }
-
-  return true;
 };
 
 const GoalSetting = ({ currentUser, onChangePreferences }) => {
@@ -253,23 +226,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
       currentValue,
       percentage,
       isReached: target > 0 && currentValue >= target,
-    };
-  };
-
-  const getLatestActivityGoalUpdate = (goal) => {
-    if (!trackedActivity || !isActivityInGoalDateRange(trackedActivity, goal)) {
-      return null;
-    }
-
-    const value = getActivityValueForGoal(trackedActivity, goal.goalType);
-
-    if (value <= 0) {
-      return null;
-    }
-
-    return {
-      value,
-      unit: getGoalUnit(goal.goalType),
     };
   };
 
@@ -500,40 +456,22 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
       ) : goals.length > 0 ? (
         <div className="goal-list">
           {goals.map((goal) => (
-            <div
-              key={goal._id}
-              className={`goal-list-item ${getLatestActivityGoalUpdate(goal) ? 'goal-list-item--updated' : ''}`}
-            >
-              {(() => {
-                const latestUpdate = getLatestActivityGoalUpdate(goal);
-
-                return (
-                  <>
-                    <div className="goal-list-header">
-                      <strong>{goal.goalType}</strong>
-                      <div className="goal-header-actions">
-                        {latestUpdate && (
-                          <span
-                            className="goal-updated-badge"
-                            aria-label={`${goal.goalType} updated from latest activity`}
-                            title="Updated from latest activity"
-                          >
-                            <CheckCircleIcon fontSize="small" />
-                            Updated
-                          </span>
-                        )}
-                        <span className="goal-status">{goal.status}</span>
-                        <button
-                          type="button"
-                          aria-label={`Edit ${goal.goalType} goal`}
-                          className="goal-edit-icon-button"
-                          onClick={() => handleEditClick(goal)}
-                          title="Edit goal"
-                        >
-                          <EditIcon fontSize="small" />
-                        </button>
-                      </div>
-                    </div>
+            <div key={goal._id} className="goal-list-item">
+              <div className="goal-list-header">
+                <strong>{goal.goalType}</strong>
+                <div className="goal-header-actions">
+                  <span className="goal-status">{goal.status}</span>
+                  <button
+                    type="button"
+                    aria-label={`Edit ${goal.goalType} goal`}
+                    className="goal-edit-icon-button"
+                    onClick={() => handleEditClick(goal)}
+                    title="Edit goal"
+                  >
+                    <EditIcon fontSize="small" />
+                  </button>
+                </div>
+              </div>
               <div className="goal-detail">Target: {goal.targetValue}</div>
               <div className="goal-detail">Period: {goal.period}</div>
               <div className="goal-detail">Target date: {formatDate(goal.targetDate)}</div>
@@ -557,10 +495,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
                     </div>
                     {loadingActivities ? (
                       <div className="goal-progress-note">Calculating progress from tracked activities...</div>
-                    ) : latestUpdate ? (
-                      <div className="goal-progress-note goal-progress-note--updated">
-                        Latest activity added {formatGoalValue(latestUpdate.value, goal.goalType)} {latestUpdate.unit}.
-                      </div>
                     ) : progress.isReached ? (
                       <div className="goal-progress-note goal-progress-note--success">Target reached from tracked activities.</div>
                     ) : (
@@ -586,9 +520,6 @@ const GoalSetting = ({ currentUser, onChangePreferences }) => {
                 </Button>
               </div>
               {renderGoalEditPanel(goal)}
-                  </>
-                );
-              })()}
             </div>
           ))}
         </div>
