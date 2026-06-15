@@ -14,9 +14,19 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
+const WorkoutGuide = require('./models/workoutGuide.model');
+const workoutGuidesSeed = require('./seed/workoutGuides.seed');
+
 mongoose
   .connect(mongoUri, { useNewUrlParser: true })
-  .then(() => console.log("MongoDB database connection established successfully"))
+  .then(async () => {
+    console.log("MongoDB database connection established successfully");
+    const count = await WorkoutGuide.countDocuments();
+    if (count === 0) {
+      await workoutGuidesSeed();
+      console.log("Workout guides seeded.");
+    }
+  })
   .catch((error) => console.error("MongoDB connection error:", error));
 
 const connection = mongoose.connection;
@@ -30,6 +40,12 @@ connection.on('error', (error) => {
 const exercisesRouter = require('./routes/exercises');
 app.use('/exercises', exercisesRouter);
 
+const goalsRouter = require('./routes/goals');
+app.use('/goals', goalsRouter);
+
+const workoutGuidesRouter = require('./routes/workoutGuides');
+app.use('/workout-guides', workoutGuidesRouter);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -41,4 +57,4 @@ app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
 
-module.exports = app;  
+module.exports = app;

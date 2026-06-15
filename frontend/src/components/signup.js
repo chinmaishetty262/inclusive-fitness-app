@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Button, Form, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Link } from 'react-router-dom';
 
 const Signup = ({ onSignup }) => {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
@@ -18,17 +18,17 @@ const Signup = ({ onSignup }) => {
     setError('');
 
     try {
-        const response = await axios.post('http://localhost:8080/api/auth/signup', formData);
+        const response = await axiosInstance.post('api/auth/signup', formData);
 
         if (response.data === 'User registered successfully!') {
             console.log('User registered successfully');
-            onSignup(formData.username); 
+            onSignup(formData.email); 
         } else {
             setError(response.data);
         }
     } catch (error) {
         console.error('Error during registration', error);
-        setError(error.response?.data || 'An error occurred during registration. Please try again.');
+        setError(error.response?.data?.message || 'An error occurred during registration. Please try again.');
     }
   };
 
@@ -39,12 +39,12 @@ const Signup = ({ onSignup }) => {
 
       <Form onSubmit={handleSignup}>
         <Form.Group controlId="formBasicEmail">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>Email</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Enter username"
-            name="username"
-            value={formData.username}
+            placeholder="Enter email"
+            name="email"
+            value={formData.email}
             onChange={handleInputChange}
             required
           />

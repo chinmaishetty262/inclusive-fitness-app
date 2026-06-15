@@ -1,0 +1,4 @@
+$kind: collection
+name: MLA App Testing
+variables:
+  exerciseId: ""

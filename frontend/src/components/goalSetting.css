@@ -1,0 +1,216 @@
+.goal-setting-container {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.goal-setting-container h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text);
+}
+
+.saved-goals-section {
+  margin-bottom: 40px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.saved-goals-section h4 {
+  color: var(--text);
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.goal-loading,
+.empty-goals-message {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-list-item {
+  background: var(--card-bg);
+  border: 1px solid rgba(31, 114, 255, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(18, 33, 60, 0.08);
+  padding: 16px;
+}
+
+.goal-list-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.goal-header-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.goal-status {
+  background: var(--muted-bg);
+  border: 1px solid rgba(31, 114, 255, 0.2);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+
+.goal-edit-icon-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--accent) !important;
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px !important;
+  justify-content: center;
+  padding: 6px !important;
+  width: 34px !important;
+}
+
+.goal-edit-icon-button:hover,
+.goal-edit-icon-button:focus {
+  background: var(--muted-bg);
+  outline: 2px solid rgba(31, 114, 255, 0.2);
+}
+
+.goal-detail {
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.goal-edit-panel {
+  background: var(--card-bg);
+  border: 1px solid rgba(31, 114, 255, 0.16);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(18, 33, 60, 0.08);
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.goal-edit-panel h5 {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.goal-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.latest-activity-update {
+  background: var(--muted-bg);
+  border: 1px solid rgba(31, 114, 255, 0.16);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.goal-progress {
+  margin-top: 14px;
+}
+
+.goal-progress-summary {
+  align-items: center;
+  color: var(--text);
+  display: flex;
+  font-size: 14px;
+  font-weight: 600;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.goal-progress-track {
+  background: var(--muted-bg);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.goal-progress-fill {
+  background: var(--accent);
+  border-radius: inherit;
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.goal-progress-note {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.goal-progress-note--success {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.goal-actions {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 14px;
+}
+
+.goal-actions .btn {
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .goal-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-theme="high-contrast"] .goal-setting-container,
+[data-theme="high-contrast"] .saved-goals-section,
+[data-theme="high-contrast"] .latest-activity-update {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-list-item {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-status {
+  background: var(--muted-bg) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-edit-panel {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-progress-track {
+  border: 1px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .goal-progress-fill {
+  background: var(--accent-highlight) !important;
+}

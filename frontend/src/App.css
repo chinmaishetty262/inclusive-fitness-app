@@ -1,21 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-body, html, div, h1, h2, h3, p, button {
+:root {
+  --bg: #f7fbff;
+  --bg-secondary: #ffffff;
+  --card-bg: #fefcff;
+  --text: #12213c;
+  --text-secondary: #4b5d7e;
+  --accent: #1f72ff;
+  --accent-alt: #ff3f91;
+  --accent-highlight: #ff8a32;
+  --accent-text: #ffffff;
+  --border: rgba(31, 114, 255, 0.25);
+  --focus-ring: #ff8a32;
+  --muted-bg: #eef4ff;
+}
+
+.custom-navbar .btn-toggle {
+  display: block !important;
+  visibility: visible !important;
+}
+
+body,
+html,
+div,
+h1,
+h2,
+h3,
+p,
+button {
   margin: 0;
   padding: 0;
   border: 0;
   font-size: 100%;
-  font-family: 'Barlow', sans-serif;
+  font-family: 'Inter', sans-serif;
   vertical-align: baseline;
 }
 
 body {
   line-height: 1;
-  color: #333; 
+  color: #333;
 }
 
 #appLogo {
-  width: 150px;
+  width: 72px;
   height: auto;
 }
 
@@ -26,15 +53,18 @@ body {
   padding: 20px;
 }
 
-.appTitle h1 {
-  color: #F54996ff;
-  font-size: 36px;
-  margin: 40px 0 40px 0;
+.appTitle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 40px 0;
 }
 
-.appTitle {
-  margin: 40px 0 40px 0;
-  text-align: center;
+.appTitle h1 {
+  color: var(--accent);
+  font-size: 36px;
+  margin: 0;
 }
 
 form {
@@ -43,18 +73,18 @@ form {
 
 
 button.navigationButton {
-  background-color: #F54996ff; 
-  color: white; 
+  background-color: var(--accent);
+  color: var(--accent-text);
   border: none;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: var(--accent) 0.3s ease;
   margin-bottom: 50px;
 }
 
 button.navigationButton:hover {
-  background-color: #ff66b2;
+  background-color: var(--accent);
 }
 
 /* Style the success message */
@@ -65,33 +95,33 @@ p.successMessage {
 
 .componentContainer {
   padding: 30px;
-  background-color: #f0f0f0; 
-  border-radius: 5px; 
+  background-color: var(--bg-secondary);
+  border-radius: 5px;
 }
 
-.btn-primary {
-  background-color: #F54996 !important;
-  border-color: #F54996ff !important;
+button.btn.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-primary:hover {
-  background-color: #f03087 !important; 
-  border-color: #F54996ff !important; 
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-success {
-  background-color: #F54996 !important;
-  border-color: #F54996ff !important;
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 .btn-success:hover {
-  background-color: #f03087 !important;  
-  border-color: #F54996ff !important; 
+  background-color: var(--accent);
+  border-color: var(--border);
 }
 
 input#duration {
-  width: 20%; 
-  margin: auto; 
+  width: 20%;
+  margin: auto;
 }
 
 .form-margin {
@@ -103,24 +133,637 @@ input#duration {
   text-align: center;
   padding: 10px;
   font-size: 12px;
-  color: lightgrey;
+  color: var(--text-secondary);
   position: relative;
   bottom: 0;
   width: 100%;
 }
 
 .navbar {
-  background-color: #F54996;
+  background-color: var(--accent);
+  min-height: 60px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  margin: 16px 20px 0 20px;
+  box-shadow: 0 4px 12px rgba(31, 114, 255, 0.15);
 }
 
 .navbar-nav {
   margin: 0 auto !important;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .custom-nav-link {
-  margin-right: 40px;
+  margin-right: 12px;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-text) !important;
+  padding: 10px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.custom-nav-link:last-child {
+  margin-right: 0;
+}
+
+.custom-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.custom-nav-link .nav-logo {
+  width: 20px;
+  height: auto;
+  object-fit: contain;
+}
+
+.custom-nav-link .nav-icon {
+  font-size: 16px;
+  min-width: 20px;
+}
+
+.custom-nav-link span {
+  display: inline;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .custom-nav-link {
+    margin-right: 0;
+    margin-bottom: 4px;
+    padding: 12px 16px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .custom-nav-link span {
+    font-size: 16px;
+  }
 }
 
 .signup {
   margin: 20px;
+}
+
+/* button.btn-toggle {
+  padding: 8px 14px !important;
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border: 2px solid white !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  margin-left: 16px;
+} */
+
+[data-theme="high-contrast"] {
+  --bg: #000000;
+  --bg-secondary: #1a1a1a;
+  --card-bg: #1a1a1a;
+  --text: #ffffff;
+  --text-secondary: #e0e0e0;
+  --accent: #ffff00;
+  --accent-alt: #ff9800;
+  --accent-highlight: #00ffff;
+  --accent-text: #000000;
+  --border: #ffffff;
+  --focus-ring: #ffff00;
+  --muted-bg: #2a2a2a;
+}
+
+[data-theme="high-contrast"] body,
+[data-theme="high-contrast"] .App,
+[data-theme="high-contrast"] .componentContainer {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .appTitle h1 {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .navbar,
+[data-theme="high-contrast"] .nav-back {
+  background-color: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  border-radius: 16px !important;
+  margin: 16px 20px 0 20px !important;
+  overflow: hidden !important;
+}
+
+[data-theme="high-contrast"] .navbar-nav {
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link,
+[data-theme="high-contrast"] .nav-link {
+  color: var(--text) !important;
+  border-radius: 12px !important;
+  padding: 10px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link:last-child,
+[data-theme="high-contrast"] .nav-link:last-child {
+  margin-right: 0 !important;
+}
+
+[data-theme="high-contrast"] .custom-nav-link:hover,
+[data-theme="high-contrast"] .nav-link:hover {
+  background-color: var(--muted-bg) !important;
+  transform: translateY(-2px) !important;
+}
+
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] h1,
+[data-theme="high-contrast"] h2,
+[data-theme="high-contrast"] h3,
+[data-theme="high-contrast"] h4,
+[data-theme="high-contrast"] h5,
+[data-theme="high-contrast"] h6 {
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="high-contrast"] .exercise-type-selection {
+  background: var(--muted-bg) !important;
+  border: 2px solid var(--border) !important;
+}
+
+/* Additional high contrast styles for forms and components */
+[data-theme="high-contrast"] .track-form-container,
+[data-theme="high-contrast"] .signup-container,
+[data-theme="high-contrast"] .login-container {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .track-form-container h3,
+[data-theme="high-contrast"] .signup-container h3,
+[data-theme="high-contrast"] .login-container h3 {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .warning-message,
+[data-theme="high-contrast"] .success-message {
+  color: var(--accent-highlight) !important;
+  border: 2px solid var(--accent-highlight) !important;
+  background: rgba(0, 255, 255, 0.1) !important;
+}
+
+/* High contrast styles for date picker and other components */
+[data-theme="high-contrast"] .react-datepicker-wrapper,
+[data-theme="high-contrast"] .react-datepicker__input-container input {
+  background: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker {
+  background: var(--card-bg) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__header {
+  background: var(--muted-bg) !important;
+  border-bottom: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__current-month,
+[data-theme="high-contrast"] .react-datepicker__day-name {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day:hover {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+}
+
+[data-theme="high-contrast"] .react-datepicker__day--selected {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+}
+
+/* High contrast styles for buttons and interactive elements */
+[data-theme="high-contrast"] button:not(.MuiIconButton-root) {
+  background: var(--accent) !important;
+  color: var(--accent-text) !important;
+  border: 2px solid var(--accent) !important;
+}
+
+[data-theme="high-contrast"] button:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+}
+
+[data-theme="high-contrast"] button:disabled {
+  background: var(--muted-bg) !important;
+  color: var(--text-muted) !important;
+  border-color: var(--border) !important;
+}
+
+/* High contrast styles for links */
+[data-theme="high-contrast"] a {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
+}
+
+[data-theme="high-contrast"] a:hover {
+  color: var(--accent-hover) !important;
+}
+
+/* High contrast styles for input elements */
+[data-theme="high-contrast"] input,
+[data-theme="high-contrast"] select,
+[data-theme="high-contrast"] textarea {
+  background: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] input:focus,
+[data-theme="high-contrast"] select:focus,
+[data-theme="high-contrast"] textarea:focus {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px !important;
+}
+
+/* High contrast styles for footer */
+[data-theme="high-contrast"] .footer {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border-top: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] button.btn.btn-primary {
+  color: var(--bg) !important;
+  font-weight: 550 !important;
+
+}
+
+[data-theme="high-contrast"] .modal-header .btn-close,
+[data-theme="high-contrast"] button.btn-close {
+  background-color: var(--accent) !important;
+  /* do NOT set background-image here */
+  opacity: 1 !important;
+  border-radius: 4px !important;
+}
+
+[data-theme="high-contrast"] .form-control::placeholder {
+  color: var(--text) !important;
+  opacity: 1;
+}
+
+[data-theme="high-contrast"] button.btn.btn-success {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg) !important;
+  font-weight: 550 !important;
+}
+
+/* Form validation styles */
+.form-group.required .form-control:invalid,
+.form-group.required .form-control[value=""] {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-group.required .form-label::after {
+  content: " *";
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.exercise-type-selection {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--muted-bg);
+  border-radius: 12px;
+  border: 1px solid rgba(31, 114, 255, 0.1);
+}
+
+.exercise-type-selection .MuiIconButton-root {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.exercise-type-selection .MuiIconButton-root.selected {
+  border-color: var(--accent);
+  background-color: rgba(31, 114, 255, 0.1);
+  box-shadow: 0 0 12px rgba(31, 114, 255, 0.3);
+}
+
+.exercise-type-selection .MuiIconButton-root:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(31, 114, 255, 0.2);
+}
+
+.track-form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.track-form-container h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--text);
+}
+
+.form-field-group {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid rgba(31, 114, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(18, 33, 60, 0.08);
+}
+
+.form-field-group .form-label {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-field-group .form-control {
+  border-radius: 8px;
+  border: 2px solid rgba(31, 114, 255, 0.2);
+  padding: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.form-field-group .form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(31, 114, 255, 0.25);
+}
+
+.form-field-group .form-control[type="number"] {
+  appearance: textfield;
+  padding-right: 16px;
+}
+
+.form-field-group .form-control[type="number"]::-webkit-outer-spin-button,
+.form-field-group .form-control[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-field-group .form-control:invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.submit-button-container {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.submit-button-container .btn {
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  min-width: 150px;
+}
+
+.warning-message {
+  background: rgba(255, 138, 50, 0.1);
+  color: #c2410c;
+  border: 1px solid rgba(255, 138, 50, 0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  color: #166534;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Unselected icon buttons in high contrast */
+[data-theme="high-contrast"] .MuiIconButton-root {
+  background-color: var(--accent) !important;
+  /* border: 2px solid var(--accent) !important; */
+}
+
+/* Keep the icon itself dark/visible against yellow */
+[data-theme="high-contrast"] .MuiIconButton-root .MuiSvgIcon-root {
+  color: var(--accent-text) !important;
+}
+
+/* Selected state — yellow ring, keep yellow bg */
+[data-theme="high-contrast"] .MuiIconButton-root.MuiIconButton-colorPrimary {
+  border: 3px solid var(--accent-text) !important;
+  background-color: rgb(255, 255, 255) !important;
+}
+
+[data-theme="high-contrast"] button.btn-close {
+  background-color: var(--accent) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 12px !important;
+  opacity: 1 !important;
+  border-radius: 4px !important;
+}
+
+[data-theme="high-contrast"] .onboarding-selected {
+  outline: 3px solid white !important;
+  outline-offset: 2px !important;
+}
+
+[data-theme="high-contrast"] .onboarding-selected {
+  outline: 3px solid white !important;
+  outline-offset: 2px !important;
+}
+
+/* Goal setting profile card in high contrast */
+[data-theme="high-contrast"] .goal-setting-container .form-field-group,
+[data-theme="high-contrast"] .goal-setting-container div[style] {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .goal-setting-container p,
+[data-theme="high-contrast"] .goal-setting-container h4 {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-banner {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* The goal notice card (blue/pink one) */
+[data-theme="high-contrast"] .dashboard-tip-card,
+[data-theme="high-contrast"] .dashboard-goal-notice {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+/* The orange/yellow tip card */
+[data-theme="high-contrast"] .dashboard-level-tip {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-notice p {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-goal-notice a {
+  color: var(--accent) !important;
+}
+
+[data-theme="high-contrast"] .dashboard-level-tip {
+  color: var(--text) !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] button:active,
+[data-theme="high-contrast"] button:focus {
+  background-color: var(--accent) !important;
+  color: var(--accent-text) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary:active,
+[data-theme="high-contrast"] .btn-secondary:focus {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected:focus,
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+/* Onboarding buttons */
+.onboarding-btn {
+  padding: 20px 12px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  background: #fff;
+  color: #12213c;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.onboarding-btn--level {
+  padding: 16px 20px;
+  text-align: left;
+}
+
+.onboarding-btn.onboarding-selected {
+  border: 3px solid #1f72ff;
+  background: #eef4ff;
+  color: #12213c;
+}
+
+[data-theme="high-contrast"] .onboarding-btn {
+  background: #000000 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn.onboarding-selected {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffffff !important;
+}
+
+[data-theme="high-contrast"] .onboarding-btn:hover,
+[data-theme="high-contrast"] .onboarding-btn:focus,
+[data-theme="high-contrast"] .onboarding-btn:active {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-primary:focus,
+[data-theme="high-contrast"] .btn-primary:hover,
+[data-theme="high-contrast"] .btn-primary:active {
+  background-color: var(--accent) !important;
+  color: #000000 !important;
+  border-color: var(--accent) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-secondary:focus,
+[data-theme="high-contrast"] .btn-secondary:active {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text) !important;
+  border: 2px solid var(--border) !important;
+  outline: 3px solid white !important;
+}
+
+[data-theme="high-contrast"] .btn-primary:disabled {
+  background-color: #444 !important;
+  color: #aaaaaa !important;
+  border-color: #444 !important;
 }

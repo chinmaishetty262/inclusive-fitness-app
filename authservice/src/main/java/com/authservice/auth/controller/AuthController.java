@@ -1,42 +1,43 @@
 package com.authservice.auth.controller;
 
 import com.authservice.auth.model.User;
+import com.authservice.auth.dto.LoginRequest;
+import com.authservice.auth.dto.RegisterRequest;
 import com.authservice.auth.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.*;
+import com.authservice.auth.service.AuthService;
 
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AuthService authService;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            return ResponseEntity.badRequest().body("User already exists - please log in");
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return ResponseEntity.ok("User registered successfully!");
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        
+        return ResponseEntity.ok(authService.register(request));
+            
+    
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@RequestBody User user) {
-        User existingUser = userRepository.findByUsername(user.getUsername());
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest request) {
+        String token = authService.login(request);
 
-        if (existingUser != null && passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
-            return ResponseEntity.ok("User authenticated");
-        } else {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
+    return ResponseEntity.ok(
+            Map.of(
+                "message", "Login successful",
+                "token", token
+            )
+    );
     }
 }

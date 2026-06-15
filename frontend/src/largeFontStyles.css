@@ -1,0 +1,61 @@
+[data-font="large"] body {
+    font-size: 20px !important;
+}
+
+[data-font="large"] h1 {
+    font-size: 1.4em !important;
+}
+
+[data-font="large"] h2 {
+    font-size: 1.3em !important;
+}
+
+[data-font="large"] h3,
+h5 {
+    font-size: 1.2em !important;
+}
+
+[data-font="large"] h4 {
+    font-size: 1.15em !important;
+}
+
+[data-font="large"] p,
+[data-font="large"] span,
+[data-font="large"] li,
+[data-font="large"] label,
+[data-font="large"] a {
+    font-size: 1.15em !important;
+}
+
+[data-font="large"] button,
+[data-font="large"] .btn,
+[data-font="large"] input,
+[data-font="large"] select,
+[data-font="large"] textarea {
+    font-size: 1.15em !important;
+    padding: 10px 20px !important;
+}
+
+[data-font="large"] .nav-link {
+    font-size: 1.15em !important;
+}
+
+[data-font="large"] .footer {
+    font-size: 1.1em !important;
+}
+
+[data-font="large"] .componentContainer {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+[data-font="large"] .bubble-label,
+[data-font="large"] .bubble-value {
+    font-size: 1.15em !important;
+}
+
+[data-font="large"] .MuiIconButton-root {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 1.15em !important;
+}

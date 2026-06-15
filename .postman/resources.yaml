@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: c790689c-01c5-47c0-8d90-a7c6053859b7
+
+localResources:
+  docs:
+    - ..\README.md

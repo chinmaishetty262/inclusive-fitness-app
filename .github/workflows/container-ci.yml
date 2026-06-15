@@ -1,0 +1,48 @@
+name: Container CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - preprod
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build application images
+        run: docker compose -f docker-compose.yml build frontend activity-tracking analytics authservice
+
+      - name: Build test images
+        run: docker compose -f docker-compose.ci.yml build frontend-test activity-tracking-test analytics-test authservice-test
+
+      - name: Start MongoDB for integration-dependent tests
+        run: docker compose -f docker-compose.ci.yml up -d mongodb
+
+      - name: Wait for MongoDB to be healthy (optional safety)
+        run: sleep 10
+
+      - name: Run frontend tests in container
+        run: docker compose -f docker-compose.ci.yml run --rm frontend-test
+
+      - name: Run activity-tracking tests in container
+        run: docker compose -f docker-compose.ci.yml run --rm activity-tracking-test
+
+      - name: Run analytics tests in container
+        run: docker compose -f docker-compose.ci.yml run --rm analytics-test
+
+      - name: Run authservice tests in container
+        run: docker compose -f docker-compose.ci.yml run --rm authservice-test 
+
+      - name: Tear down containers
+        if: always()
+        run: docker compose -f docker-compose.ci.yml down --volumes --remove-orphans
