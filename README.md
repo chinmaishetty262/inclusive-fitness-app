@@ -194,6 +194,12 @@ cd analytics
 python3 -m pytest -q
 ```
 
-
 ## Deployment
-The application is containerized using Docker and can be deployed on any platform that supports Docker containers. For AWS deployment, a GitHub Actions pipeline is configured for CI/CD.
+The application is containerized using Docker and can be deployed on any platform that supports Docker containers. 
+
+#  ENV FILE TO RUN LOCALLY
+
+Create `.env` file:
+
+```env
+JWT_SECRET=mySuperSecureJwtSecretKey12345678901234567890
