@@ -23,12 +23,12 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-
     private final MeterRegistry meterRegistry;
 
-    private Counter loginSuccessCounter;
-    private Counter loginFailureCounter;
-    private Counter signupCounter;
+    // Metrics counters for monitoring auth events
+    private final Counter loginSuccessCounter;
+    private final Counter loginFailureCounter;
+    private final Counter signupCounter;
 
     private static final Logger logger =
             LoggerFactory.getLogger(AuthServiceImpl.class);
@@ -43,16 +43,19 @@ public class AuthServiceImpl implements AuthService {
         this.jwtUtil = jwtUtil;
         this.meterRegistry = meterRegistry;
 
+        // Successful login counter
         this.loginSuccessCounter =
                 Counter.builder("auth.login.success")
                         .description("Successful logins")
                         .register(meterRegistry);
 
+        // Failed login counter
         this.loginFailureCounter =
                 Counter.builder("auth.login.failure")
                         .description("Failed logins")
                         .register(meterRegistry);
 
+        // Signup counter
         this.signupCounter =
                 Counter.builder("auth.signup.success")
                         .description("Successful registrations")
@@ -62,6 +65,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String register(RegisterRequest request) {
 
+        // Prevent duplicate user registration
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new UserAlreadyExistsException("User already exists");
         }
@@ -84,12 +88,14 @@ public class AuthServiceImpl implements AuthService {
         User existingUser =
                 userRepository.findByEmail(request.getEmail());
 
+        // User not found
         if (existingUser == null) {
             loginFailureCounter.increment();
             logger.warn("Login failed - user not found {}", request.getEmail());
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
+        // Validate password
         boolean passwordMatches =
                 passwordEncoder.matches(
                         request.getPassword(),
@@ -102,9 +108,9 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidCredentialsException("Invalid email or password");
         }
 
+        // Successful login
         loginSuccessCounter.increment();
         logger.info("Login successful for {}", existingUser.getEmail());
-
-        return jwtUtil.generateToken(existingUser.getEmail());
+         return jwtUtil.generateToken(existingUser.getEmail());
     }
 }
