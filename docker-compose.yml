@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://root:cfgmla23@mongodb:27017
+      - MONGO_URI=mongodb://root:123@mongodb:27017
     ports:
       - "5050:5050"
     depends_on:
@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_DATA_MONGODB_DATABASE: test
-      SPRING_DATA_MONGODB_URI: mongodb://root:cfgmla23@mongodb:27017
+      SPRING_DATA_MONGODB_URI: mongodb://root:123@mongodb:27017
       JWT_SECRET: ${JWT_SECRET}
     env_file:
       - .env
@@ -55,7 +55,7 @@ services:
     image: mongo:latest
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=cfgmla23
+      - MONGO_INITDB_ROOT_PASSWORD=123
     ports:
       - "27017:27017"
     volumes:

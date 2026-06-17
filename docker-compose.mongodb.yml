@@ -6,7 +6,7 @@ services:
     container_name: mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=cfgmla23
+      - MONGO_INITDB_ROOT_PASSWORD=123
     ports:
       - "27017:27017"
     volumes:

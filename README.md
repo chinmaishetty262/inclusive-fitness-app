@@ -6,19 +6,7 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 
 ![Screenshot](screenshots/frontpage.png)  
 
-### Project Setup Instructions
 
-- One fork per group: Before you begin, one member of your group should fork this repository.
-- Each group member should clone the forked version of the repository to their local environment or GitHub Codespace.
-- All project work should be done in your group's fork.
-
-### Current Features
-
-- User registration for personalized tracking
-- Log various types of exercises with descriptions, duration, and date
-- See weekly and overall statistics
-- Interactive UI with Material-UI components
-- Real-time data persistence with MongoDB
 
 ### Prerequisites
 
@@ -27,25 +15,9 @@ The Activity Tracking functionality uses the MERN stack (MongoDB, Express.js, Re
 - npm or yarn
 - Python Flask
 - Java 8
-(all already installed in the devcontainer)
-
-## Development in Github Codespaces
-
-#### Starting a new Devcontainer
-
-1. Click on "Code"
-2. Switch to the "Codespaces" tab
-3. Create new Codespace from main
-<img src="screenshots/codespaces.png" width="300"/>
 
 
-4. Open Codespace in VS code for best experience:
-<img src="screenshots/codespaces2.png" width="300"/>
 
-
-Walktrough:
-
-https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-in-visual-studio-code
 
 
 #### Check needed packages are installed:
@@ -137,7 +109,7 @@ docker run --name mongodb -d -p 27017:27017 -v mongodbdata:/data/db mongo:latest
 ### Connect to MongoDB
 
 ```
-mongosh -u root -p cfgmla23 --authenticationDatabase admin --host localhost --port 27017
+mongosh -u root -p 123 --authenticationDatabase admin --host localhost --port 27017
 ```
 
 show registered activities:
@@ -197,9 +169,4 @@ python3 -m pytest -q
 ## Deployment
 The application is containerized using Docker and can be deployed on any platform that supports Docker containers. 
 
-#  ENV FILE TO RUN LOCALLY
 
-Create `.env` file:
-
-```env
-JWT_SECRET=mySuperSecureJwtSecretKey12345678901234567890
